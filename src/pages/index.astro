@@ -1,0 +1,554 @@
+﻿---
+import '../styles/global.css';
+
+const site = 'https://paddlme.tech';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Paddlme — rent kayaks, paddleboards and jet skis</title>
+    <meta
+      name="description"
+      content="Rent water sports gear from people nearby. Every host and renter is identity verified, and every handover runs a safety checklist."
+    />
+    <link rel="canonical" href={site} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-white font-sans text-ink antialiased">
+    <header
+      id="site-nav"
+      class="fixed inset-x-0 top-0 z-30 flex h-[74px] items-center bg-gradient-to-b from-ocean-900/90 to-transparent backdrop-blur-md transition-colors [&.is-scrolled]:border-b [&.is-scrolled]:border-white/10 [&.is-scrolled]:bg-ocean-950/95"
+    >
+      <div class="mx-auto flex w-full max-w-[1240px] items-center gap-3 px-8">
+        <a href="/" class="flex items-center gap-2.5 no-underline">
+          <img src="/logo3v1.png" alt="" height="45" class="h-[55px] w-auto" />
+          <span class="font-brand text-[30px] tracking-[-0.5px] text-white">
+            Paddlme
+          </span>
+        </a>
+
+        <nav class="ml-12 hidden items-center gap-7 md:flex">
+          <details class="drop relative">
+            <summary
+              class="cursor-pointer list-none text-md font-semibold text-white/80 transition-colors hover:text-white [&::-webkit-details-marker]:hidden"
+            >
+              How it works
+            </summary>
+            <div
+              class="absolute left-[-12px] top-[34px] flex min-w-[232px] flex-col rounded-xl border border-line bg-white p-2 shadow-[0_12px_32px_rgba(0,37,58,0.18)]"
+            >
+              <a
+                href="#how-to-rent"
+                class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
+                >How to rent</a
+              >
+              <a
+                href="#how-to-list"
+                class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
+                >How to list your gear</a
+              >
+            </div>
+          </details>
+          <a
+            href="#faq"
+            class="text-md font-semibold text-white/80 transition-colors hover:text-white"
+            >FAQ</a
+          >
+        </nav>
+
+        <div class="ml-auto flex gap-2.5">
+          <button
+            type="button"
+            data-auth
+            class="cursor-pointer rounded-full border border-white/30 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition-colors hover:bg-white/20"
+          >
+            List an item
+          </button>
+          <button
+            type="button"
+            data-auth
+            class="cursor-pointer rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
+          >
+            Login or Sign Up
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero-gradient grid min-h-[520px] grid-cols-1 overflow-hidden lg:grid-cols-[0.88fr_1.12fr]">
+      <div class="flex max-w-[720px] flex-col justify-center px-6 pb-12 pt-[-24px] lg:px-12">
+        <h1
+          class="text-[34px] font-extrabold leading-[1.1] tracking-[-0.02em] text-white lg:text-[60px]"
+        >
+          Your day on the water,<br />sorted. <span class="text-sand-300">All in one place.</span>
+        </h1>
+        <p class="text-[20px] mt-8 max-w-[46ch] text-base leading-relaxed text-white/80">
+          Rent or list kayaks, paddleboards, jet skis and more from locals near you.
+          If it floats, you'll find it here on Paddlme.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <button
+            type="button"
+            data-auth
+            class="cursor-pointer rounded-full bg-accent px-6 py-4 text-[15px] font-bold text-white transition-[filter] hover:brightness-95"
+          >
+            Browse listings
+          </button>
+          <button
+            type="button"
+            data-auth
+            class="cursor-pointer rounded-full bg-white px-6 py-4 text-[15px] font-bold text-ocean-950 transition-transform hover:-translate-y-0.5"
+          >
+            Become a host
+          </button>
+        </div>
+      </div>
+
+      <div class="relative h-[360px] overflow-hidden lg:mt-[72px] lg:h-auto lg:min-h-[648px]">
+        <img
+          class="hero-slide is-active"
+          src="/kayaking.webp"
+          alt="Kayaking on the water"
+        />
+      </div>
+    </section>
+
+    <section class="overflow-hidden bg-white py-10">
+      <div
+        class="hidden"
+      >
+        <h2 class="text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">
+          Gear near you
+        </h2>
+        <p id="listing-status" class="text-base text-muted">Loading gear...</p>
+      </div>
+      <div
+        id="listings"
+        class="cursor-pointer listing-marquee"
+      >
+      </div>
+    </section>
+
+    <section class="bg-[#f6f8f9] px-8 py-[88px]">
+      <div class="mx-auto mb-10 max-w-[1240px] text-center">
+        <p class="text-[20px] font-semibold text-[#17455d]">
+          Why book through Paddlme?
+        </p>
+        <h2 class="text-[40px] font-extrabold tracking-[-0.02em] text-gray-850">
+          Rent from the local community
+        </h2>
+        <p class="mt-2.5 text-base text-muted">
+          Real equipment from real people, with the checks that make it safe.
+        </p>
+      </div>
+      <div
+        class="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-5"
+      >
+        <div class="rounded-2xl bg-white px-6 py-7">
+          <h3 class="mb-2 text-[17px] font-bold">Identity verified</h3>
+          <p class="text-[15px] leading-relaxed text-muted">
+            Every host and renter verifies their ID before
+            their first booking. So you can be sure you're dealing with real people.
+          </p>
+        </div>
+        <div class="rounded-2xl bg-white px-6 py-7">
+          <h3 class="mb-2 text-[17px] font-bold">A recorded handover</h3>
+          <p class="text-[15px] leading-relaxed text-muted">
+            The renter gets a 6-digit code only they can see. The host enters it to
+            complete a safety checklist so the handover is recorded and provable.
+          </p>
+        </div>
+        <div class="rounded-2xl bg-white px-6 py-7">
+          <h3 class="mb-2 text-[17px] font-bold">Reviews both ways</h3>
+          <p class="text-[15px] leading-relaxed text-muted">
+            Hosts see a renter's score before they confirm. Renters see the
+            host's. Both sides build a record that makes the next rental easier.
+          </p>
+        </div>
+        <div class="rounded-2xl bg-white px-6 py-7">
+          <h3 class="mb-2 text-[17px] font-bold">Gear that is actually local</h3>
+          <p class="text-[15px] leading-relaxed text-muted">
+            The kayak three streets away, not a shop across town. Booking is
+            fast and pickup or drop off is arranged directly with the host.
+          </p>
+        </div>
+      </div>
+    </section>
+
+        <section id="how-to-rent" class="bg-white px-8 py-[88px]">
+      <div class="mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-16 lg:grid-cols-2">
+        <img
+          src="/browse.png"
+          alt="Browsing gear in the Paddlme app"
+          class="mx-auto h-[574px] w-[279px] object-contain"
+        />
+        <div>
+          <h2 class="mb-8 text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">How to rent</h2>
+            <div class="mb-8 flex gap-5">
+              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">1</div>
+              <div>
+                <h3 class="mb-1.5 text-[19px] font-bold">Browse and book</h3>
+                <p class="text-[15px] leading-relaxed text-muted">Find gear by location and dates, choose your times, and confirm the booking.</p>
+              </div>
+            </div>            <div class="mb-8 flex gap-5">
+              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">2</div>
+              <div>
+                <h3 class="mb-1.5 text-[19px] font-bold">Meet and check over</h3>
+                <p class="text-[15px] leading-relaxed text-muted">The host runs the safety checklist with you, then enters the handover code from your phone.</p>
+              </div>
+            </div>            <div class="mb-8 flex gap-5">
+              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">3</div>
+              <div>
+                <h3 class="mb-1.5 text-[19px] font-bold">Return and review</h3>
+                <p class="text-[15px] leading-relaxed text-muted">Bring the gear back as agreed, mark it returned, and leave a review.</p>
+              </div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="community relative flex min-h-[650px] items-center overflow-hidden"
+    >
+      <img
+        class="community-bg absolute inset-0 h-full w-full object-cover"
+        src="/omaha.webp"
+        alt=""
+      />
+      
+      <div
+        class="relative z-10 ml-[max(24px,calc((100vw-1240px)/2))] max-w-[600px] py-16 pr-6"
+      >
+        <h2 class="text-[36px] font-extrabold leading-[1.15] text-white">
+          Hire local, support<br />your community
+        </h2>
+        <p class="mb-7 mt-4 text-base leading-relaxed text-white/85">
+          Every hire supports a neighbour or local business. Whether you are
+          borrowing a kayak from someone down the road or a paddleboard from a
+          local hire shop, your booking keeps money circulating locally and helps
+          more people get on the water.
+        </p>
+        <button
+          type="button"
+          data-auth
+          class="cursor-pointer rounded-full bg-accent px-6 py-4 text-[15px] font-bold text-white transition-[filter] hover:brightness-95"
+        >
+          Browse listings
+        </button>
+      </div>
+    </section>
+
+        <section id="how-to-list" class="bg-[#f6f8f9] px-8 py-[88px]">
+      <div class="mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-16 lg:grid-cols-2">
+        <div>
+          <h2 class="mb-8 text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">How to rent out</h2>
+            <div class="mb-8 flex gap-5">
+              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">1</div>
+              <div>
+                <h3 class="mb-1.5 text-[19px] font-bold">List your gear</h3>
+                <p class="text-[15px] leading-relaxed text-muted">Add photos, a price and your availability, and it goes live.</p>
+              </div>
+            </div>            <div class="mb-8 flex gap-5">
+              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">2</div>
+              <div>
+                <h3 class="mb-1.5 text-[19px] font-bold">Approve bookings</h3>
+                <p class="text-[15px] leading-relaxed text-muted">You are in charge of who rents it and when.</p>
+              </div>
+            </div>            <div class="mb-8 flex gap-5">
+              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">3</div>
+              <div>
+                <h3 class="mb-1.5 text-[19px] font-bold">Arrange handover</h3>
+                <p class="text-[15px] leading-relaxed text-muted">Message the renter and run the safety checklist together.</p>
+              </div>
+            </div>
+          <button
+            type="button"
+            data-auth
+            class="cursor-pointer rounded-full bg-accent px-6 py-4 text-[15px] font-bold text-white transition-[filter] hover:brightness-95"
+          >
+            Create a listing
+          </button>
+        </div>
+        <img
+          src="/listing.png"
+          alt="Creating a listing in the Paddlme app"
+          class="mx-auto h-[574px] w-[279px] object-contain"
+        />
+      </div>
+    </section>
+
+    <section id="faq" class="faq-list bg-[#f6f8f9] px-8 py-[88px]">
+      <div class="mx-auto mb-10 max-w-[1240px] text-center">
+        <h2 class="text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">
+          Frequently asked questions
+        </h2>
+      </div>
+      <div class="mx-auto max-w-[880px]">
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary
+            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
+          >
+            How does Paddlme work?
+          </summary>
+          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
+            Paddlme is a peer-to-peer marketplace that makes finding recreational water sports equipment easier by bringing locals together in one place.</p>
+            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">We connect you with trusted locals so you can spend less time searching and more time out on the water.</p>
+        </details>
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary
+            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
+          >
+            What is the safety checklist?
+          </summary>
+          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
+            At handover the host records the gear's condition, confirms the
+            safety briefing, and the renter acknowledges the gear matches the
+            listing. The 6-digit code is there to prove the checklist has been completed.
+          </p>
+        </details>
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary
+            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
+          >
+            How do I report an issue?
+          </summary>
+          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
+            We’re committed to resolving issues quickly and fairly, ensuring a cruisy experience for all Paddlme users!
+          </p>
+          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
+            If you encounter any issues while using Paddlme, whether it's a technical problem, payment issue, or damage related to a rental, here’s how you can get support:
+          </p>
+          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">1. Contact Us:</span> Send an email to <a href="mailto:support@paddlme.com"> support@paddlme.com</a> as soon as you notice the issue.
+          </p>
+          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">2. Provide Details:</span> Include as much relevant information as possible:
+            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted"><span class="font-bold text-ink">• For technical issues:</span> Describe the problem and tell us which device and browser you're using.</p>
+            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted"><span class="font-bold text-ink">• For payment problems:</span> Share the transaction details, including confirmation numbers.</p>
+            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted"><span class="font-bold text-ink">• For hire claims:</span> Attach timestamped photos or videos of the item before and after the hire, a description of the issue, and any supporting documents (e.g., proof of purchase).</p>
+            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted"><span class="font-bold text-ink">• For other issues:</span> Be as specific as possible so we can assist you effectively.</p>
+          </p>
+          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">3. Assessment:</span> We will review your case and may request additional information if needed.
+          </p>
+          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">4. Resolution:</span> Once we have all the information, we'll respond within 48 hours and work towards a fair resolution. Depending on the urgency and nature of your issue.
+          </p>
+        </details>
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary
+            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
+          >
+            How much does it cost to rent or list on Paddlme?
+          </summary>
+          <p class="mt-3.5 text-[15px] leading-relaxed text-muted">
+            It’s free to list your gear on Paddlme, with no listing fees.
+          </p>
+          <p class="mt-3.5 text-[15px] leading-relaxed text-muted">
+            Hosts set their own rental prices. For each booking paid through Paddlme, the host pays a 10% commission, automatically deducted from their payout.
+          </p>
+          <p class="mt-3.5 text-[15px] leading-relaxed text-muted">
+            For customers, it’s free to browse and compare rental options. You pay the price shown for your booking, including any host delivery charges where applicable.
+          </p>
+        </details>
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary
+            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
+          >
+            Is there an iPhone app?
+          </summary>
+          <p class="mt-3.5 text-[15px] leading-relaxed text-muted">
+            Paddlme is on Android now, with iPhone following. This site works on
+            any device in the meantime.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <footer class="foot-gradient px-8 py-14">
+      <div
+        class="mx-auto flex max-w-[1240px] flex-wrap justify-between gap-8 text-white/70"
+      >
+        <div>
+          <span class="font-brand text-[22px] text-white">Paddlme</span>
+          <p class="mt-2.5 text-sm">
+            Gear from people who paddle it. Auckland, New Zealand.
+          </p>
+        </div>
+        <nav class="flex flex-wrap gap-6">
+          <a href="#how-to-rent" class="text-sm hover:text-white">How it works</a>
+          <a href="#faq" class="text-sm hover:text-white">FAQ</a>
+          <a href="/privacy" class="text-sm hover:text-white">Privacy</a>
+          <a href="/terms" class="text-sm hover:text-white">Terms</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      import {
+        collection,
+        getDocs,
+        limit,
+        orderBy,
+        query,
+        where,
+      } from 'firebase/firestore';
+      import { db } from '../lib/firebase';
+
+      type Listing = {
+        id: string;
+        title: string;
+        location: string;
+        pricePerHour: number;
+        image: string | null;
+      };
+
+      const grid = document.getElementById('listings');
+      const status = document.getElementById('listing-status');
+
+      const cardClass =
+        'overflow-hidden rounded-2xl border border-line bg-white transition-shadow hover:shadow-[0_10px_28px_rgba(0,37,58,0.12)]';
+
+      const escapeHtml = (value: string) =>
+        value.replace(
+          /[&<>"']/g,
+          (char) =>
+            ({
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#39;',
+            })[char] as string,
+        );
+
+      const price = (value: number) =>
+        Number.isFinite(value) && value > 0
+          ? `NZ$${value.toFixed(0)}`
+          : 'Price on request';
+
+      async function loadListings() {
+        if (!grid || !status) return;
+
+        try {
+          const snapshot = await getDocs(
+            query(
+              collection(db, 'equipment'),
+              where('isAvailable', '==', true),
+              orderBy('createdAt', 'desc'),
+              limit(8),
+            ),
+          );
+
+          const listings: Listing[] = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            const images = Array.isArray(data.imageUrls) ? data.imageUrls : [];
+            return {
+              id: doc.id,
+              title: data.title ?? 'Untitled gear',
+              location: data.location ?? 'Location to be confirmed',
+              pricePerHour: Number(data.pricePerHour ?? 0),
+              image: images.length > 0 ? String(images[0]) : null,
+            };
+          });
+
+          if (listings.length === 0) {
+            status.textContent = 'New gear is being listed — check back shortly.';
+            return;
+          }
+
+          status.textContent = 'Fresh listings from hosts nearby';
+          const cards = listings
+            .map(
+              (listing) => `
+              <article class="${cardClass}">
+                ${
+                  listing.image
+                    ? `<img class="aspect-[4/3] w-full object-cover" src="${escapeHtml(
+                        listing.image,
+                      )}" alt="${escapeHtml(listing.title)}" loading="lazy" />`
+                    : ''
+                }
+                <div class="px-4 pb-4 pt-3.5">
+                  <h3 class="mb-1 text-base font-bold">${escapeHtml(
+                    listing.title,
+                  )}</h3>
+                  <p class="mb-2.5 text-sm text-muted">${escapeHtml(
+                    listing.location,
+                  )}</p>
+                  <p class="text-[15px] font-bold">${price(
+                    listing.pricePerHour,
+                  )} <span class="text-[13px] font-medium text-muted">/ hour</span></p>
+                </div>
+              </article>`,
+            )
+            .join('');
+
+          // Duplicated so the translate(-50%) loop is seamless.
+          grid.innerHTML = cards + cards;
+        } catch (error) {
+          console.error('Failed to load listings', error);
+          status.textContent = 'Listings are unavailable right now.';
+        }
+      }
+
+      document
+        .querySelectorAll<HTMLButtonElement>('[data-auth]')
+        .forEach((button) => {
+          button.addEventListener('click', () => {
+            window.location.href = '/login';
+          });
+        });
+
+      const navEl = document.getElementById('site-nav');
+      if (navEl) {
+        const sync = () =>
+          navEl.classList.toggle('is-scrolled', window.scrollY > 24);
+        sync();
+        window.addEventListener('scroll', sync, { passive: true });
+      }
+
+      const community = document.querySelector('.community');
+      const communityBg = document.querySelector<HTMLElement>('.community-bg');
+      const reduceMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      ).matches;
+
+      if (community && communityBg && !reduceMotion) {
+        let ticking = false;
+
+        const updateParallax = () => {
+          ticking = false;
+          const rect = community.getBoundingClientRect();
+          const viewport = window.innerHeight;
+          if (rect.bottom < 0 || rect.top > viewport) return;
+
+          const progress = (viewport - rect.top) / (viewport + rect.height);
+          const shift = (progress - 0.5) * 80;
+          communityBg.style.transform = `translate3d(0, ${shift}px, 0) scale(1.12)`;
+        };
+
+        const requestUpdate = () => {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(updateParallax);
+        };
+
+        updateParallax();
+        window.addEventListener('scroll', requestUpdate, { passive: true });
+        window.addEventListener('resize', requestUpdate, { passive: true });
+      }
+
+      loadListings();
+    </script>
+  </body>
+</html>

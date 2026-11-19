@@ -1,0 +1,879 @@
+---
+const site = 'https://paddlme.tech';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Paddlme â€” rent kayaks, paddleboards and jet skis</title>
+    <meta
+      name="description"
+      content="Rent water sports gear from people nearby. Every host and renter is identity verified, and every handover runs a safety checklist."
+    />
+    <link rel="canonical" href={site} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="nav" id="site-nav">
+      <div class="nav-inner">
+        <a class="brand" href="/">
+          <img src="/logo3v1.png" alt="" height="42" />
+          <span class="wordmark">Paddlme</span>
+        </a>
+
+        <nav class="nav-links">
+          <details class="drop">
+            <summary>How it works</summary>
+            <div class="drop-panel">
+              <a href="#how-to-rent">How to rent</a>
+              <a href="#how-to-list">How to list your gear</a>
+            </div>
+          </details>
+          <a href="#faq">FAQ</a>
+        </nav>
+
+        <div class="nav-actions">
+          <button class="btn btn-ghost" type="button" data-auth>List an item</button>
+          <button class="btn btn-solid" type="button" data-auth>
+            Login or Sign Up
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>Your day on the water,<br />sorted. All in one place.</h1>
+        <p>
+          Find recreational watersport gear from local hosts. 
+          Everything from kayaks to paddleboards to jet skis. 
+          If it floats, you'll find it on Paddlme.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-solid lg" type="button" data-auth>
+            Browse gear
+          </button>
+          <button class="btn btn-light lg" type="button" data-auth>
+            Become a host
+          </button>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img class="hero-slide is-active" src="/kayaking.webp" alt="Kayaking" />
+        <img class="hero-slide" src="/jetskiing.webp" alt="Jet skiing" loading="lazy" />
+        <img class="hero-slide" src="/SUP.webp" alt="Paddleboarding" loading="lazy" />
+      </div>
+    </section>
+
+    <section class="featured">
+      <div class="section-head">
+        <h2>Gear near you</h2>
+        <p class="sub" id="listing-status">Loading gearâ€¦</p>
+      </div>
+      <div class="grid" id="listings"></div>
+    </section>
+
+    <section class="why">
+      <div class="section-head centered">
+        <h2>Rent from your community, not a shop</h2>
+        <p class="sub">
+          Real gear from real people, with the checks that make it safe.
+        </p>
+      </div>
+      <div class="why-grid">
+        <div class="tile">
+          <h3>Identity verified</h3>
+          <p>
+            Every host and renter confirms their ID and a live selfie before
+            their first booking. We never receive or store the document.
+          </p>
+        </div>
+        <div class="tile">
+          <h3>A recorded handover</h3>
+          <p>
+            The renter gets a code only they can see. The host enters it to
+            complete a safety checklist â€” so the handover is provable, not
+            assumed.
+          </p>
+        </div>
+        <div class="tile">
+          <h3>Reviews both ways</h3>
+          <p>
+            Hosts see a renter's score before they confirm. Renters see the
+            host's. Both sides build a record that makes the next rental easier.
+          </p>
+        </div>
+        <div class="tile">
+          <h3>Gear that is actually local</h3>
+          <p>
+            The kayak three streets away, not a depot across town. Booking is
+            instant and pickup is arranged directly with the host.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="steps" id="how-to-rent">
+      <div class="section-head centered">
+        <h2>How to rent</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Browse and book</h3>
+          <p>
+            Find gear by location and dates, choose your times, and confirm the
+            booking.
+          </p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>Meet and check over</h3>
+          <p>
+            The host runs the safety checklist with you, then enters the handover
+            code from your phone.
+          </p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>Return and review</h3>
+          <p>
+            Bring the gear back as agreed, mark it returned, and leave a review.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="community">
+      <img class="community-bg" src="/omaha.webp" alt="" />
+      <div class="community-inner">
+        <h2>Hire local, support<br />your community</h2>
+        <p>
+          Every hire supports a neighbour or local business. Whether you are
+          borrowing a kayak from someone down the road or a paddleboard from a
+          local hire shop, your booking keeps money circulating locally and
+          helps more people get on the water.
+        </p>
+        <button class="btn btn-solid lg" type="button" data-auth>
+          Browse gear
+        </button>
+      </div>
+    </section>
+
+    <section class="host" id="how-to-list">
+      <div class="host-copy">
+        <h2>Your gear, more days on the water</h2>
+        <p>
+          A paddleboard that sits in the garage between trips can earn its keep.
+          List it, set your availability and price, and approve the bookings you
+          want. You stay in control of who takes it and when.
+        </p>
+        <button class="btn btn-solid lg" type="button" data-auth>
+          Start listing
+        </button>
+      </div>
+      <div class="host-points">
+        <div class="point">
+          <h3>You approve every booking</h3>
+          <p>A request is not a commitment until you confirm it.</p>
+        </div>
+        <div class="point">
+          <h3>Set your own availability</h3>
+          <p>Block dates whenever the gear is in use or off the water.</p>
+        </div>
+        <div class="point">
+          <h3>Verified renters only</h3>
+          <p>You see their record before you hand anything over.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <div class="section-head centered">
+        <h2>Frequently asked questions</h2>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>How does identity verification work?</summary>
+          <p>
+            Every host and renter completes an ID check with a live selfie and
+            face match. It takes about a minute and is required before your
+            first booking. We receive only a pass or fail â€” never your
+            documents.
+          </p>
+        </details>
+        <details>
+          <summary>What is the safety checklist?</summary>
+          <p>
+            At handover the host records the gear's condition, confirms the
+            safety briefing, and the renter acknowledges the gear matches the
+            listing. The handover code proves it happened.
+          </p>
+        </details>
+        <details>
+          <summary>What happens if the gear is damaged?</summary>
+          <p>
+            Both sides have a timestamped record of the condition at handover.
+            Report an issue from the booking and we will step in with the
+            evidence on file.
+          </p>
+        </details>
+        <details>
+          <summary>Do I need my own insurance?</summary>
+          <p>
+            Bookings are covered by Paddlme's policy. Contact us for the details
+            before your first rental if you need specifics.
+          </p>
+        </details>
+        <details>
+          <summary>Is there an iPhone app?</summary>
+          <p>
+            Paddlme is on Android now, with iPhone following. This site works on
+            any device in the meantime.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="foot-inner">
+        <div>
+          <span class="wordmark small">Paddlme</span>
+          <p>Gear from people who paddle it. Auckland, New Zealand.</p>
+        </div>
+        <nav>
+          <a href="#how-to-rent">How it works</a>
+          <a href="#faq">FAQ</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  @font-face {
+    font-family: 'TTDaysSans';
+    src: url('/fonts/TTDaysSans-3.otf') format('opentype');
+    font-weight: 700;
+    font-display: swap;
+  }
+
+  :root {
+    --sea-900: #00253a;
+    --sea-700: #064965;
+    --sea-500: #1d5974;
+    --ink: #0e2a38;
+    --muted: #5a6e78;
+    --line: #e5e7eb;
+    --bg: #f6f8f9;
+    /* Replace with the exact accent from lib/core/theme/app_colors.dart */
+    --accent: #f26b21;
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    margin: 0;
+    background: #fff;
+    color: var(--ink);
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { letter-spacing: -0.02em; line-height: 1.15; margin: 0; }
+
+  /* ---------------------------------------------------------------- nav */
+
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    z-index: 30;
+    background: linear-gradient(to bottom, rgba(10, 37, 52, 0.92), rgba(10, 37, 52, 0));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+  }
+
+  .nav.is-scrolled {
+    background: rgba(10, 37, 52, 0.97);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-inner {
+    width: 100%;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+
+  .wordmark {
+    font-family: 'TTDaysSans', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+
+  .wordmark.small { font-size: 22px; color: #fff; }
+
+  .nav-links { display: flex; align-items: center; gap: 28px; margin-left: 48px; }
+
+  .nav-links > a,
+  .drop > summary {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .drop { position: relative; }
+  .drop > summary::-webkit-details-marker { display: none; }
+  .drop > summary::after {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 6px;
+    margin-bottom: 3px;
+    border-right: 2px solid rgba(255, 255, 255, 0.6);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+  }
+
+  .drop[open] > summary::after {
+    transform: rotate(-135deg);
+  }
+  .drop > summary:hover { color: var(--sea-500); }
+
+  .drop-panel {
+    position: absolute;
+    top: 34px;
+    left: -12px;
+    min-width: 232px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 37, 58, 0.12);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drop-panel a {
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .drop-panel a:hover { background: var(--bg); }
+
+  .nav-actions { margin-left: auto; display: flex; gap: 10px; }
+
+  .btn {
+    font: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 15px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: filter 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn.lg { padding: 17px 26px; font-size: 15px; }
+
+  .btn-solid { background: var(--accent); color: #fff; }
+  .btn-solid:hover { filter: brightness(0.94); }
+
+  .btn-ghost { background: transparent; color: var(--accent); border-color: var(--accent); }
+  .btn-ghost:hover { background: color-mix(in srgb, var(--accent) 8%, #fff); }
+
+  .btn-light { background: #fff; color: var(--sea-900); }
+  .btn-light:hover { background: rgba(255, 255, 255, 0.88); }
+
+  /* --------------------------------------------------------------- hero */
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: radial-gradient(
+      115% 120% at 8% 0%,
+      #17455d 0%,
+      #10374b 34%,
+      #0a2534 68%,
+      #061a25 100%
+    );
+    min-height: 380px;
+    align-items: stretch;
+  }
+
+  .hero-copy {
+    padding: 104px 48px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 720px;
+  }
+
+  .hero h1 { color: #fff; font-size: 46px; font-weight: 800; }
+
+  .hero p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 17px;
+    line-height: 1.6;
+    margin: 20px 0 0;
+    max-width: 46ch;
+  }
+
+  .hero-actions { display: flex; gap: 12px; margin-top: 32px; }
+
+  .hero-image { position: relative; }
+
+  .hero-image {
+    position: relative;
+    overflow: hidden;
+    min-height: 100%;
+    height: 380px;
+  }
+
+  .hero-image img.hero-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 900ms ease;
+  }
+
+  .hero-image img.hero-slide.is-active { opacity: 1; }
+
+  /* ----------------------------------------------------------- sections */
+
+  section {
+    padding: 88px 32px;
+    scroll-margin-top: 88px;
+  }
+
+  .section-head { max-width: 1240px; margin: 0 auto 40px; }
+  .section-head.centered { text-align: center; }
+
+  .section-head h2 { font-size: 34px; font-weight: 800; color: var(--sea-900); }
+
+  .sub { color: var(--muted); font-size: 16px; margin: 10px 0 0; }
+
+  .featured { background: #fff; }
+  .featured .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+
+  .grid {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 10px 28px rgba(0, 37, 58, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+  .card-body { padding: 14px 16px 16px; }
+  .card-title { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+  .card-loc { color: var(--muted); font-size: 14px; margin: 0 0 10px; }
+  .card-price { font-size: 15px; font-weight: 700; margin: 0; }
+  .card-price span { font-weight: 500; color: var(--muted); font-size: 13px; }
+
+  .why { background: var(--bg); }
+
+  .why-grid {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .tile {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 24px;
+  }
+
+  .tile h3 { font-size: 17px; font-weight: 700; margin: 0 0 8px; }
+  .tile p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.6; }
+
+  .steps { background: #fff; }
+
+  .steps-grid {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+  }
+
+  .num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--sea-500) 12%, #fff);
+    color: var(--sea-500);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+
+  .step h3 { font-size: 19px; font-weight: 700; margin: 0 0 8px; }
+  .step p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.6; }
+
+  /* ---------------------------------------------------------- community */
+
+  .community {
+    position: relative;
+    padding: 0;
+    min-height: 440px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .community-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    will-change: transform;
+  }
+
+  .community::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 37, 58, 0.94) 0%,
+      rgba(0, 37, 58, 0.55) 55%,
+      rgba(0, 37, 58, 0.2) 100%
+    );
+  }
+
+  .community-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    padding: 72px 32px 72px 0;
+    margin-left: max(32px, calc((100vw - 1240px) / 2));
+  }
+
+  .community h2 { color: #fff; font-size: 36px; font-weight: 800; }
+
+  .community p {
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 16px;
+    line-height: 1.65;
+    margin: 18px 0 28px;
+  }
+
+  /* -------------------------------------------------------------- host */
+
+  .host {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .host-copy h2 { font-size: 34px; font-weight: 800; color: var(--sea-900); }
+  .host-copy p { color: var(--muted); font-size: 16px; line-height: 1.65; margin: 16px 0 28px; }
+
+  .point { border-top: 1px solid var(--line); padding: 18px 0; }
+  .point h3 { font-size: 16px; font-weight: 700; margin: 0 0 6px; }
+  .point p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* --------------------------------------------------------------- faq */
+
+  .faq { background: var(--bg); }
+
+  .faq-list { max-width: 880px; margin: 0 auto; }
+
+  .faq-list details {
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding: 18px 22px;
+  }
+
+  .faq-list summary {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 16px;
+    list-style: none;
+  }
+
+  .faq-list summary::-webkit-details-marker { display: none; }
+  .faq-list summary::after {
+    content: '';
+    display: inline-block;
+    float: right;
+    width: 8px;
+    height: 8px;
+    margin-top: 6px;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+  }
+  .faq-list details[open] summary::after {
+    transform: rotate(-135deg);
+  }
+
+  .faq-list p {
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  /* ------------------------------------------------------------ footer */
+
+  .foot {
+    background: linear-gradient(180deg, #0a2534 0%, #061a25 100%);
+    padding: 52px 32px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .foot-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .foot p { margin: 10px 0 0; font-size: 14px; }
+
+  .foot nav { display: flex; gap: 24px; flex-wrap: wrap; }
+
+  .foot nav a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .foot nav a:hover { color: #fff; }
+
+  @media (max-width: 900px) {
+    .hero, .host { grid-template-columns: 1fr; }
+    .hero { min-height: 0; }
+    .hero-copy { padding: 48px 24px; }
+    .hero h1 { font-size: 34px; }
+    .hero-image { height: 280px; }
+    .nav-links { display: none; }
+    .nav-inner { padding: 0 20px; }
+    .community-inner { margin-left: 24px; padding-right: 24px; }
+    .community h2 { font-size: 28px; }
+  }
+</style>
+
+<script>
+  import {
+    collection,
+    getDocs,
+    limit,
+    orderBy,
+    query,
+    where,
+  } from 'firebase/firestore';
+  import { db } from '../lib/firebase';
+
+  type Listing = {
+    id: string;
+    title: string;
+    location: string;
+    pricePerHour: number;
+    image: string | null;
+  };
+
+  const grid = document.getElementById('listings');
+  const status = document.getElementById('listing-status');
+
+  const escapeHtml = (value: string) =>
+    value.replace(
+      /[&<>"']/g,
+      (char) =>
+        ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+        })[char] as string,
+    );
+
+  const price = (value: number) =>
+    Number.isFinite(value) && value > 0
+      ? `NZ$${value.toFixed(0)}`
+      : 'Price on request';
+
+  async function load() {
+    if (!grid || !status) return;
+
+    try {
+      const snapshot = await getDocs(
+        query(
+          collection(db, 'equipment'),
+          where('isAvailable', '==', true),
+          orderBy('createdAt', 'desc'),
+          limit(8),
+        ),
+      );
+
+      const listings: Listing[] = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        const images = Array.isArray(data.imageUrls) ? data.imageUrls : [];
+        return {
+          id: doc.id,
+          title: data.title ?? 'Untitled gear',
+          location: data.location ?? 'Location to be confirmed',
+          pricePerHour: Number(data.pricePerHour ?? 0),
+          image: images.length > 0 ? String(images[0]) : null,
+        };
+      });
+
+      if (listings.length === 0) {
+        status.textContent = 'New gear is being listed â€” check back shortly.';
+        return;
+      }
+
+      status.textContent = 'Fresh listings from hosts nearby';
+      grid.innerHTML = listings
+        .map(
+          (listing) => `
+          <article class="card">
+            ${
+              listing.image
+                ? `<img src="${escapeHtml(listing.image)}" alt="${escapeHtml(
+                    listing.title,
+                  )}" loading="lazy" />`
+                : ''
+            }
+            <div class="card-body">
+              <h3 class="card-title">${escapeHtml(listing.title)}</h3>
+              <p class="card-loc">${escapeHtml(listing.location)}</p>
+              <p class="card-price">${price(
+                listing.pricePerHour,
+              )} <span>/ hour</span></p>
+            </div>
+          </article>`,
+        )
+        .join('');
+    } catch (error) {
+      console.error('Failed to load listings', error);
+      status.textContent = 'Listings are unavailable right now.';
+    }
+  }
+
+  document
+    .querySelectorAll<HTMLButtonElement>('[data-auth]')
+    .forEach((button) => {
+      button.addEventListener('click', () => {
+        window.location.href = '/login';
+      });
+    });
+
+  const slides = Array.from(document.querySelectorAll<HTMLImageElement>(".hero-slide"));
+  if (slides.length > 1) {
+    let slideIndex = 0;
+    window.setInterval(() => {
+      slides[slideIndex].classList.remove("is-active");
+      slideIndex = (slideIndex + 1) % slides.length;
+      slides[slideIndex].classList.add("is-active");
+    }, 5000);
+  }
+
+  const navEl = document.getElementById("site-nav");
+  if (navEl) {
+    const sync = () => navEl.classList.toggle("is-scrolled", window.scrollY > 24);
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+  }
+
+  const community = document.querySelector(".community");
+  const communityBg = document.querySelector(".community-bg");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (community && communityBg && !reduceMotion) {
+    let ticking = false;
+
+    const updateParallax = () => {
+      ticking = false;
+      const rect = community.getBoundingClientRect();
+      const viewport = window.innerHeight;
+      if (rect.bottom < 0 || rect.top > viewport) return;
+
+      const progress = (viewport - rect.top) / (viewport + rect.height);
+      const shift = (progress - 0.5) * 80;
+      communityBg.style.transform = "translate3d(0, " + shift + "px, 0) scale(1.12)";
+    };
+
+    const requestUpdate = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(updateParallax);
+    };
+
+    updateParallax();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+  }
+
+  load();
+</script>
+
+
+
