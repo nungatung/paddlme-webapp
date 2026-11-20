@@ -1,0 +1,46 @@
+---
+// Hero: copy on the gradient with a single photograph filling the right half.
+---
+
+<section
+  class="hero-gradient grid min-h-[520px] grid-cols-1 overflow-hidden lg:grid-cols-[0.88fr_1.12fr]"
+>
+  <div class="flex max-w-[720px] flex-col justify-center px-6 pb-12 lg:px-12">
+    <h1
+      class="text-[34px] font-extrabold leading-[1.1] tracking-[-0.02em] text-white lg:text-[60px]"
+    >
+      Your day on the water,<br />sorted.
+      <span class="text-accent"> All in one place.</span>
+    </h1>
+    <p class="mt-8 max-w-[46ch] text-[20px] leading-relaxed text-white/80">
+      Rent or list kayaks, paddleboards, jet skis and more from locals near you.
+      If it floats, you'll find it here on Paddlme.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <button
+        type="button"
+        data-auth
+        class="cursor-pointer rounded-full bg-accent px-6 py-4 text-[15px] font-bold text-white transition-[filter] hover:brightness-95"
+      >
+        Browse listings
+      </button>
+      <button
+        type="button"
+        data-auth
+        class="cursor-pointer rounded-full bg-white px-6 py-4 text-[15px] font-bold text-ocean-950 transition-transform hover:-translate-y-0.5"
+      >
+        Become a host
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="relative h-[360px] overflow-hidden lg:mt-[72px] lg:h-auto lg:min-h-[648px]"
+  >
+    <img
+      class="hero-slide is-active"
+      src="/kayaking.webp"
+      alt="Kayaking on the water"
+    />
+  </div>
+</section>

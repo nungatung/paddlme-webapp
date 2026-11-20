@@ -1,0 +1,64 @@
+---
+// The site header. Kept as its own component so the page reads as content
+// rather than one long document.
+---
+
+<header
+  id="site-nav"
+  class="fixed inset-x-0 top-0 z-30 flex h-[74px] items-center bg-gradient-to-b from-ocean-900/90 to-transparent backdrop-blur-md transition-colors [&.is-scrolled]:border-b [&.is-scrolled]:border-white/10 [&.is-scrolled]:bg-ocean-950/95"
+>
+  <div class="mx-auto flex w-full max-w-[1240px] items-center gap-3 px-8">
+    <a href="/" class="flex items-center gap-2.5 no-underline">
+      <img src="/logo3v1.png" alt="" height="55" class="h-[55px] w-auto" />
+      <span class="font-brand text-[30px] tracking-[-0.5px] text-white">
+        Paddlme
+      </span>
+    </a>
+
+    <nav class="ml-12 hidden items-center gap-7 md:flex">
+      <details class="drop relative">
+        <summary
+          class="cursor-pointer list-none text-sm font-semibold text-white/80 transition-colors hover:text-white [&::-webkit-details-marker]:hidden"
+        >
+          How it works
+        </summary>
+        <div
+          class="absolute left-[-12px] top-[34px] flex min-w-[232px] flex-col rounded-xl border border-line bg-white p-2 shadow-[0_12px_32px_rgba(0,37,58,0.18)]"
+        >
+          <a
+            href="#how-to-rent"
+            class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
+            >How to rent</a
+          >
+          <a
+            href="#how-to-list"
+            class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
+            >How to rent out</a
+          >
+        </div>
+      </details>
+      <a
+        href="#faq"
+        class="text-sm font-semibold text-white/80 transition-colors hover:text-white"
+        >FAQ</a
+      >
+    </nav>
+
+    <div class="ml-auto flex gap-2.5">
+      <button
+        type="button"
+        data-auth
+        class="rounded-full border border-white/30 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition-colors hover:bg-white/20"
+      >
+        List an item
+      </button>
+      <button
+        type="button"
+        data-auth
+        class="rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
+      >
+        Login or Sign Up
+      </button>
+    </div>
+  </div>
+</header>
