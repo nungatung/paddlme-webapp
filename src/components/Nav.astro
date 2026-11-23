@@ -1,6 +1,8 @@
 ---
 // The site header. Kept as its own component so the page reads as content
-// rather than one long document.
+// rather than one long document. The desktop dropdown and the mobile menu are
+// both <details> elements, so the browser owns the open/close state and the
+// script only handles closing them.
 ---
 
 <header
@@ -20,7 +22,7 @@
         <summary
           class="cursor-pointer list-none text-sm font-semibold text-white/80 transition-colors hover:text-white [&::-webkit-details-marker]:hidden"
         >
-          How it works
+          How Paddlme works
         </summary>
         <div
           class="absolute left-[-12px] top-[34px] flex min-w-[232px] flex-col rounded-xl border border-line bg-white p-2 shadow-[0_12px_32px_rgba(0,37,58,0.18)]"
@@ -38,27 +40,106 @@
         </div>
       </details>
       <a
-        href="#faq"
+        href="/#faqs"
         class="text-sm font-semibold text-white/80 transition-colors hover:text-white"
-        >FAQ</a
+        >FAQs</a
       >
     </nav>
 
-    <div class="ml-auto flex gap-2.5">
+    <div class="ml-auto hidden gap-2.5 md:flex">
       <button
         type="button"
         data-auth
-        class="rounded-full border border-white/30 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition-colors hover:bg-white/20"
+        class="cursor-pointer rounded-full border border-white/30 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition-colors hover:bg-white/20"
       >
         List an item
       </button>
       <button
         type="button"
         data-auth
-        class="rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
+        class="cursor-pointer rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
       >
         Login or Sign Up
       </button>
     </div>
+
+    <details class="mdrop relative ml-auto md:hidden">
+      <summary
+        class="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 [&::-webkit-details-marker]:hidden"
+        aria-label="Menu"
+      >
+        <span class="relative block h-[14px] w-[20px]">
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+        </span>
+      </summary>
+      <div
+        class="absolute right-0 top-[calc(100%+12px)] flex w-[264px] flex-col rounded-xl border border-line bg-white p-3 shadow-[0_12px_32px_rgba(0,37,58,0.18)]"
+      >
+        <a
+          href="#how-to-rent"
+          class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
+          >How to rent</a
+        >
+        <a
+          href="#how-to-list"
+          class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
+          >How to rent out</a
+        >
+        <a
+          href="#faqs"
+          class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
+          >FAQs</a
+        >
+
+        <div class="my-2.5 border-t border-line"></div>
+
+        <button
+          type="button"
+          data-auth
+          class="rounded-full border border-line px-5 py-3 text-sm font-bold text-ink transition-colors hover:bg-[#f6f8f9]"
+        >
+          List an item
+        </button>
+        <button
+          type="button"
+          data-auth
+          class="mt-2 rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
+        >
+          Login or Sign Up
+        </button>
+      </div>
+    </details>
   </div>
 </header>
+
+<script>
+  // The two menus are <details> elements; clicking outside, clicking an item
+  // inside, or pressing Escape closes them.
+  const menus = document.querySelectorAll<HTMLDetailsElement>(
+    'details.drop, details.mdrop',
+  );
+
+  const close = (menu: HTMLDetailsElement) => menu.removeAttribute('open');
+
+  menus.forEach((menu) => {
+    menu.querySelectorAll('a, button').forEach((item) => {
+      item.addEventListener('click', () => close(menu));
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    menus.forEach((menu) => {
+      if (menu.hasAttribute('open') && !menu.contains(event.target as Node)) {
+        close(menu);
+      }
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      menus.forEach(close);
+    }
+  });
+</script>

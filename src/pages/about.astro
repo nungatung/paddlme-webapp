@@ -8,23 +8,23 @@ const site = 'https://paddlme.tech/about';
 const reasons = [
   {
     title: 'Verified before you book',
-    body: 'Everyone confirms their ID with a live selfie and a face match. We receive a pass or fail, not your documents.',
-    paths: ['M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3z', 'M9 12l2 2 4-4'],
+    body: 'Everyone confirms their ID with an ID Verification + Liveness Check. To confirm every user is who they say they are, so you can trust who you are renting from and renting to.',
+    icon: '/verified.svg',
   },
   {
-    title: 'A recorded handover',
-    body: 'The renter gets a code only they can see. The host enters it to finish the safety checklist, so neither side can skip it.',
-    paths: ['M8 12a3 3 0 106 0 3 3 0 00-6 0z', 'M11.5 14.5L12 21l2-2 2 2 .5-6.5'],
+    title: 'Waste reduction',
+    body: 'Instead of buying new, rather opt for renting locally to strive towards a more sustainable future.',
+    icon: '/recycle.svg',
   },
   {
     title: 'Reviews both ways',
-    body: 'Hosts see a renter before they confirm. Renters see the host. Gear and people build a history at the same time.',
-    paths: ['M12 4l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 16.4 7.2 18.9l.9-5.4L4.2 9.7l5.4-.8z'],
+    body: 'Backed by two way ratings and reviews so all users can share their experience and build a history of trust.',
+    icon: '/handshake.svg',
   },
   {
     title: 'Money stays local',
-    body: 'A hire pays someone in your area rather than a depot two hours away, and puts a second use on gear that already exists.',
-    paths: ['M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z', 'M12 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z'],
+    body: 'Supports the local with peer-to-peer rentals within the community.',
+    icon: '/cash.svg',
   },
 ];
 ---
@@ -34,10 +34,13 @@ const reasons = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>About — Paddlme</title>
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+    <title>Our Purpose | Building a Trusted Sharing Community</title>
     <meta
       name="description"
-      content="Why Paddlme exists: peer-to-peer water sports hire in New Zealand, with identity verification and a recorded safety handover on every booking."
+      content="Why Paddlme exists: peer-to-peer water sports rental in New Zealand, with identity verification and a recorded safety handover on every booking."
     />
     <link rel="canonical" href={site} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -51,104 +54,107 @@ const reasons = [
   <body class="bg-white font-sans text-ink antialiased">
     <Nav />
 
-    <section class="relative">
+    <section class="reveal-fade relative">
       <img
-        src="/jetski-pov.webp"
-        alt="Two riders on jet skis offshore"
-        class="h-[200px] w-full object-cover sm:h-[240px]"
+        src="/jetski-4.webp"
+        alt="A rider on a red jet ski carving across the water"
+        class="h-[420px] w-full object-cover object-[center_60%] sm:h-[520px]"
       />
-      <div class="absolute inset-0 bg-ocean-950/45"></div>
-      <div class="absolute inset-0 flex items-center">
-        <div class="mx-auto w-full max-w-[880px] px-8">
-          <h1
-            class="text-[36px] font-semibold tracking-[-0.02em] text-white sm:text-[48px]"
-          >
-            Our purpose
-          </h1>
-        </div>
-      </div>
     </section>
 
-    <main class="mx-auto max-w-[880px] px-8 pb-32 pt-28">
-      <p class="text-[17px] leading-[1.8] text-ink">
-        Paddlme lets people rent kayaks, paddleboards and jet skis from people
-        who already own them. Most of this gear sits idle. A kayak gets used a
-        dozen weekends a year, a jet ski two weeks of summer, and hiring one
-        usually means driving to a shop that keeps shop hours and stocks
-        whatever it decided to buy.
+    <main class="mx-auto max-w-[880px] px-8 pb-32 pt-16">
+      <h1
+        class="reveal text-[32px] font-semibold leading-tight tracking-[-0.015em] text-ocean-950 sm:text-[42px]"
+      >
+        Our purpose
+      </h1>
+      <p class="reveal mt-6 text-[17px] leading-[1.8] text-ink [--reveal-delay:100ms]">
+        Our goal for Paddlme is to cultivate a trusted community-driven marketplace where people can connect and share equipment whilst saving money and earning extra income. And in doing so, create a sharing economy that benefits all parties involved. 
       </p>
 
       <div class="mt-28 grid grid-cols-1 gap-x-24 gap-y-16 sm:grid-cols-2">
-        <section>
+        <section class="reveal">
           <h2
             class="text-[30px] font-semibold leading-tight tracking-[-0.015em] text-ocean-950 sm:text-[38px]"
           >
             Our vision
           </h2>
-          <p class="mt-5 text-[16px] leading-[1.75] text-muted">
-            Trying a sport should not cost the price of the equipment. If you
-            want to know whether paddleboarding is for you, rent a board for an
-            afternoon instead of buying one.
+          <p class="mt-5 text-[16px] leading-[1.75] text-ink">
+            We envision a world where people can connect and share equipment with ease and confidence, fostering a sustainable, cost effective and thriving community.
           </p>
         </section>
-        <section>
+        <section class="reveal [--reveal-delay:120ms]">
           <h2
             class="text-[30px] font-semibold leading-tight tracking-[-0.015em] text-ocean-950 sm:text-[38px]"
           >
             Our goal
           </h2>
-          <p class="mt-5 text-[16px] leading-[1.75] text-muted">
-            A booking both sides trust. Every host and renter verifies their
-            identity first. Every handover runs a safety checklist. If a paddle
-            comes back chipped, there is a record of the condition it left in.
+          <p class="mt-5 text-[16px] leading-[1.75] text-ink">
+            To create a seamless and trustworthy experience, where everyone can connect with confidence. Through rigorous ID verification, transparent communication, and a commitment to safety, we aim to make sharing simple, secure, and accessible for everyone.
           </p>
         </section>
       </div>
 
       <section class="mt-32">
         <h2
-          class="text-[30px] font-semibold leading-tight tracking-[-0.015em] text-ocean-950 sm:text-[38px]"
+          class="reveal text-[30px] font-semibold leading-tight tracking-[-0.015em] text-ocean-950 sm:text-[38px]"
         >
           Why Paddlme?
         </h2>
-        <p class="mt-5 text-[16px] leading-[1.75] text-muted">
-          Renting from a stranger only works if both people know what they are
-          getting into. These are the parts that make that possible.
+        <p class="reveal mt-5 text-[16px] leading-[1.75] text-ink [--reveal-delay:100ms]">
+          Building trust in the sharing economy is only possible through transparency, security, and mutual respect. These are the fundamentals that make peer-to-peer sharing safe and enjoyable for everyone involved.
         </p>
 
         <div
           class="mt-16 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-4"
         >
           {
-            reasons.map((reason) => (
-              <div>
-                <svg
-                  class="h-10 w-10 text-ocean-500"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  {reason.paths.map((d) => <path d={d} />)}
-                </svg>
+            reasons.map((reason, index) => (
+              <div
+                class="reveal"
+                style={`--reveal-delay: ${index * 100}ms`}
+              >
+                <img
+                  src={reason.icon}
+                  alt=""
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                  class="h-15 w-15"
+                />
                 <h3 class="mt-6 text-[18px] font-bold text-ink">{reason.title}</h3>
-                <p class="mt-2.5 text-[15px] leading-[1.7] text-muted">{reason.body}</p>
+                <p class="mt-2.5 text-[16px] leading-[1.7] text-ink">{reason.body}</p>
               </div>
             ))
           }
         </div>
       </section>
 
-      <p class="mt-32 text-[16px] leading-[1.75] text-muted">
-        Paddlme is in beta on Android, starting on the Hibiscus Coast. If you
-        have gear in the garage, list it. If you want to get on the water, see
-        what is nearby.
+      <p class="reveal mt-32 text-[16px] leading-[1.75] text-ink">
+        Come aboard and join us on this exciting journey as we work together to make peer-to-peer sharing safe and seamless. Let's get out there!
       </p>
     </main>
 
     <Footer />
+
+    <script>
+      const revealed = document.querySelectorAll('.reveal, .reveal-fade');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -48px 0px' },
+        );
+        revealed.forEach((el) => io.observe(el));
+      } else {
+        revealed.forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
   </body>
 </html>

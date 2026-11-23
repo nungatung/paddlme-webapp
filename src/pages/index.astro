@@ -1,10 +1,10 @@
----
-import '../styles/global.css';
-import Nav from '../components/Nav.astro';
-import Hero from '../components/Hero.astro';
-import Footer from '../components/Footer.astro';
+﻿---
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+import Hero from "../components/Hero.astro";
+import Footer from "../components/Footer.astro";
 
-const site = 'https://paddlme.tech';
+const site = "https://paddlme.tech";
 ---
 
 <!doctype html>
@@ -12,7 +12,10 @@ const site = 'https://paddlme.tech';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Paddlme — rent kayaks, paddleboards and jet skis</title>
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+    <title>Rent Kayaks, Paddleboards, Jet Skis & more Locally | Paddlme</title>
     <meta
       name="description"
       content="Rent water sports gear from people nearby. Every host and renter is identity verified, and every handover runs a safety checklist."
@@ -29,30 +32,22 @@ const site = 'https://paddlme.tech';
   <body class="bg-white font-sans text-ink antialiased">
     <Nav />
 
-   
-<Hero />
-
-
-    
+    <Hero />
 
     <section class="overflow-hidden bg-white py-10">
-      <div
-        class="hidden"
-      >
+      <div class="hidden">
         <h2 class="text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">
           Gear near you
         </h2>
-        <p id="listing-status" class="text-base text-muted">Loading gear...</p>
+        <p id="listing-status" class="text-base text-muted">
+          Loading gear...
+        </p>
       </div>
-      <div
-        id="listings"
-        class="cursor-pointer listing-marquee"
-      >
-      </div>
+      <div id="listings" class="cursor-pointer listing-marquee"></div>
     </section>
 
     <section class="bg-[#f6f8f9] px-8 py-[88px]">
-      <div class="mx-auto mb-10 max-w-[1240px] text-center">
+      <div class="reveal mx-auto mb-10 max-w-[1240px] text-center">
         <p class="text-[20px] font-semibold text-[#17455d]">
           Why book through Paddlme?
         </p>
@@ -63,33 +58,34 @@ const site = 'https://paddlme.tech';
           Real equipment from real people, with the checks that make it safe.
         </p>
       </div>
-      <div
-        class="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-5"
-      >
-        <div class="rounded-2xl bg-white px-6 py-7">
+      <div class="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-5">
+        <div class="reveal rounded-2xl bg-white px-6 py-7">
           <h3 class="mb-2 text-[17px] font-bold">Identity verified</h3>
-          <p class="text-[15px] leading-relaxed text-muted">
-            Every host and renter verifies their ID before
-            their first booking. So you can be sure you're dealing with real people.
+          <p class="text-[16px] leading-relaxed text-muted">
+            Every host and renter verifies their ID before their first booking.
+            So you can be sure you're dealing with real people.
           </p>
         </div>
-        <div class="rounded-2xl bg-white px-6 py-7">
+        <div class="reveal rounded-2xl bg-white px-6 py-7 [--reveal-delay:100ms]">
           <h3 class="mb-2 text-[17px] font-bold">A recorded handover</h3>
-          <p class="text-[15px] leading-relaxed text-muted">
-            The renter gets a 6-digit code only they can see. The host enters it to
-            complete a safety checklist so the handover is recorded and provable.
+          <p class="text-[16px] leading-relaxed text-muted">
+            The renter gets a 6-digit code only they can see. The host enters it
+            to complete a safety checklist so the handover is recorded and
+            provable.
           </p>
         </div>
-        <div class="rounded-2xl bg-white px-6 py-7">
+        <div class="reveal rounded-2xl bg-white px-6 py-7 [--reveal-delay:200ms]">
           <h3 class="mb-2 text-[17px] font-bold">Reviews both ways</h3>
-          <p class="text-[15px] leading-relaxed text-muted">
+          <p class="text-[16px] leading-relaxed text-muted">
             Hosts see a renter's score before they confirm. Renters see the
             host's. Both sides build a record that makes the next rental easier.
           </p>
         </div>
-        <div class="rounded-2xl bg-white px-6 py-7">
-          <h3 class="mb-2 text-[17px] font-bold">Gear that is actually local</h3>
-          <p class="text-[15px] leading-relaxed text-muted">
+        <div class="reveal rounded-2xl bg-white px-6 py-7 [--reveal-delay:300ms]">
+          <h3 class="mb-2 text-[17px] font-bold">
+            Gear that is actually local
+          </h3>
+          <p class="text-[16px] leading-relaxed text-muted">
             The kayak three streets away, not a shop across town. Booking is
             fast and pickup or drop off is arranged directly with the host.
           </p>
@@ -97,92 +93,127 @@ const site = 'https://paddlme.tech';
       </div>
     </section>
 
-        <section id="how-to-rent" class="bg-white px-8 py-[88px]">
+    <section id="how-to-rent" class="bg-white px-8 py-[88px]">
       <div class="mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-16 lg:grid-cols-2">
         <img
           src="/browse.png"
           alt="Browsing gear in the Paddlme app"
-          class="mx-auto h-[574px] w-[279px] object-contain"
+          class="reveal mx-auto hidden h-[574px] w-[279px] object-contain md:block"
         />
-        <div>
-          <h2 class="mb-8 text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">How to rent</h2>
-            <div class="mb-8 flex gap-5">
-              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">1</div>
-              <div>
-                <h3 class="mb-1.5 text-[19px] font-bold">Browse and book</h3>
-                <p class="text-[15px] leading-relaxed text-muted">Find gear by location and dates, choose your times, and confirm the booking.</p>
-              </div>
-            </div>            <div class="mb-8 flex gap-5">
-              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">2</div>
-              <div>
-                <h3 class="mb-1.5 text-[19px] font-bold">Meet and check over</h3>
-                <p class="text-[15px] leading-relaxed text-muted">The host runs the safety checklist with you, then enters the handover code from your phone.</p>
-              </div>
-            </div>            <div class="mb-8 flex gap-5">
-              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">3</div>
-              <div>
-                <h3 class="mb-1.5 text-[19px] font-bold">Return and review</h3>
-                <p class="text-[15px] leading-relaxed text-muted">Bring the gear back as agreed, mark it returned, and leave a review.</p>
-              </div>
+        <div class="reveal [--reveal-delay:120ms]">
+          <h2 class="mb-8 text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">
+            How to rent
+          </h2>
+          <div class="mb-8 flex gap-5">
+            <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">
+              1
             </div>
+            <div>
+              <h3 class="mb-1.5 text-[19px] font-bold">Browse and book</h3>
+              <p class="text-[16px] leading-relaxed text-muted">
+                Find gear by location and dates, choose your times, and confirm
+                the booking.
+              </p>
+            </div>
+          </div>
+          <div class="mb-8 flex gap-5">
+            <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">
+              2
+            </div>
+            <div>
+              <h3 class="mb-1.5 text-[19px] font-bold">Meet and check over</h3>
+              <p class="text-[16px] leading-relaxed text-muted">
+                The host runs the safety checklist with you, then enters the
+                handover code from your phone.
+              </p>
+            </div>
+          </div>
+          <div class="mb-8 flex gap-5">
+            <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">
+              3
+            </div>
+            <div>
+              <h3 class="mb-1.5 text-[19px] font-bold">Return and review</h3>
+              <p class="text-[16px] leading-relaxed text-muted">
+                Bring the gear back as agreed, mark it returned, and leave a
+                review.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <section
-      class="community relative flex min-h-[650px] items-center overflow-hidden"
+      class="relative flex min-h-[80vh] items-center bg-[url(/omaha.webp)] bg-cover bg-center bg-no-repeat bg-fixed max-md:bg-scroll"
     >
-      <img
-        class="community-bg absolute inset-0 h-full w-full object-cover"
-        src="/omaha.webp"
-        alt=""
-      />
-      
       <div
-        class="relative z-10 ml-[max(24px,calc((100vw-1240px)/2))] max-w-[600px] py-16 pr-6"
+        class="absolute inset-0 bg-gradient-to-r from-ocean-950/45 via-ocean-950/15 to-transparent"
+        aria-hidden="true"
       >
-        <h2 class="text-[36px] font-extrabold leading-[1.15] text-white">
-          Hire local, support<br />your community
+      </div>
+
+      <div class="relative z-10 ml-[max(24px,calc((100vw-1240px)/2))] max-w-[600px] py-16 pr-6">
+        <h2 class="reveal text-[36px] font-extrabold leading-[1.15] text-white">
+          Hire local, support
+          <br />
+          your community
         </h2>
-        <p class="mb-7 mt-4 text-base leading-relaxed text-white/85">
+        <p class="reveal mb-7 mt-4 text-[16px] font-semibold leading-relaxed text-white/85 [--reveal-delay:120ms]">
           Every hire supports a neighbour or local business. Whether you are
           borrowing a kayak from someone down the road or a paddleboard from a
-          local hire shop, your booking keeps money circulating locally and helps
-          more people get on the water.
+          local hire shop, your booking keeps money circulating locally and
+          helps more people get on the water.
         </p>
         <button
           type="button"
           data-auth
-          class="cursor-pointer rounded-full bg-accent px-6 py-4 text-[15px] font-bold text-white transition-[filter] hover:brightness-95"
+          class="reveal cursor-pointer rounded-full bg-accent px-6 py-4 text-[15px] font-bold text-white transition-[filter] hover:brightness-95 [--reveal-delay:240ms]"
         >
           Browse listings
         </button>
       </div>
     </section>
 
-        <section id="how-to-list" class="bg-[#f6f8f9] px-8 py-[88px]">
+    <section id="how-to-list" class="bg-[#f6f8f9] px-8 py-[88px]">
       <div class="mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-16 lg:grid-cols-2">
-        <div>
-          <h2 class="mb-8 text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">How to rent out</h2>
-            <div class="mb-8 flex gap-5">
-              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">1</div>
-              <div>
-                <h3 class="mb-1.5 text-[19px] font-bold">List your gear</h3>
-                <p class="text-[15px] leading-relaxed text-muted">Add photos, a price and your availability, and it goes live.</p>
-              </div>
-            </div>            <div class="mb-8 flex gap-5">
-              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">2</div>
-              <div>
-                <h3 class="mb-1.5 text-[19px] font-bold">Approve bookings</h3>
-                <p class="text-[15px] leading-relaxed text-muted">You are in charge of who rents it and when.</p>
-              </div>
-            </div>            <div class="mb-8 flex gap-5">
-              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">3</div>
-              <div>
-                <h3 class="mb-1.5 text-[19px] font-bold">Arrange handover</h3>
-                <p class="text-[15px] leading-relaxed text-muted">Message the renter and run the safety checklist together.</p>
-              </div>
+        <div class="reveal [--reveal-delay:120ms]">
+          <h2 class="mb-8 text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">
+            How to rent out
+          </h2>
+          <div class="mb-8 flex gap-5">
+            <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">
+              1
             </div>
+            <div>
+              <h3 class="mb-1.5 text-[19px] font-bold">List your gear</h3>
+              <p class="text-[16px] leading-relaxed text-muted">
+                Add photos, a price and your availability, and it goes live.
+              </p>
+            </div>
+          </div>
+          <div class="mb-8 flex gap-5">
+            <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">
+              2
+            </div>
+            <div>
+              <h3 class="mb-1.5 text-[19px] font-bold">Approve bookings</h3>
+              <p class="text-[16px] leading-relaxed text-muted">
+                You are in charge of who rents it and when.
+              </p>
+            </div>
+          </div>
+          <div class="mb-8 flex gap-5">
+            <div class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-extrabold text-ocean-500">
+              3
+            </div>
+            <div>
+              <h3 class="mb-1.5 text-[19px] font-bold">Arrange handover</h3>
+              <p class="text-[16px] leading-relaxed text-muted">
+                Message the renter and run the safety checklist together.
+              </p>
+            </div>
+          </div>
           <button
             type="button"
             data-auth
@@ -194,100 +225,206 @@ const site = 'https://paddlme.tech';
         <img
           src="/listing.png"
           alt="Creating a listing in the Paddlme app"
-          class="mx-auto h-[574px] w-[279px] object-contain"
+          class="reveal mx-auto hidden h-[574px] w-[279px] object-contain md:block"
         />
       </div>
     </section>
 
-    <section id="faq" class="faq-list bg-[#f6f8f9] px-8 py-[88px]">
-      <div class="mx-auto mb-10 max-w-[1240px] text-center">
+    <section id="faqs" class="faq-list bg-[#f6f8f9] px-8 py-[88px]">
+      <div class="reveal mx-auto mb-10 max-w-[1240px] text-center">
         <h2 class="text-[34px] font-extrabold tracking-[-0.02em] text-ocean-950">
           Frequently asked questions
         </h2>
       </div>
-      <div class="mx-auto max-w-[880px]">
+      <div class="reveal mx-auto max-w-[880px] [--reveal-delay:120ms]">
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
-          <summary
-            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
-          >
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
             How does Paddlme work?
           </summary>
-          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
-            Paddlme is a peer-to-peer marketplace that makes finding recreational water sports equipment easier by bringing locals together in one place.</p>
-            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">We connect you with trusted locals so you can spend less time searching and more time out on the water.</p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            Paddlme is a peer-to-peer marketplace that makes finding
+            recreational water sports equipment easier by bringing locals
+            together in one place.
+          </p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            We connect you with trusted locals so you can spend less time
+            searching and more time out on the water.
+          </p>
         </details>
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
-          <summary
-            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
-          >
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
             What is the safety checklist?
           </summary>
-          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
             At handover the host records the gear's condition, confirms the
             safety briefing, and the renter acknowledges the gear matches the
-            listing. The 6-digit code is there to prove the checklist has been completed.
+            listing. The 6-digit code is there to prove the checklist has been
+            completed. After completion the booking is moved to active and the hosts payout is initiated.
           </p>
         </details>
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
-          <summary
-            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
-          >
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
             How do I report an issue?
           </summary>
-          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
-            We’re committed to resolving issues quickly and fairly, ensuring a cruisy experience for all Paddlme users!
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            We’re committed to resolving issues quickly and fairly, ensuring a
+            cruisy experience for all Paddlme users!
           </p>
-          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
-            If you encounter any issues while using Paddlme, whether it's a technical problem, payment issue, or damage related to a rental, here’s how you can get support:
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            If you encounter any issues while using Paddlme, whether it's a
+            technical problem, payment issue, or damage related to a rental,
+            here’s how you can get support:
           </p>
-          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
-            <span class="font-bold text-ink">1. Contact Us:</span> Send an email to <a href="mailto:support@paddlme.com"> support@paddlme.com</a> as soon as you notice the issue.
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">1. Contact Us:</span> Send an email
+            to{" "}
+            <a href="mailto:paddlme.contact@gmail.com">
+              {" "}
+              paddlme.contact@gmail.com
+            </a>{" "}
+            as soon as you notice the issue.
           </p>
-          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
-            <span class="font-bold text-ink">2. Provide Details:</span> Include as much relevant information as possible:
-            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted"><span class="font-bold text-ink">• For technical issues:</span> Describe the problem and tell us which device and browser you're using.</p>
-            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted"><span class="font-bold text-ink">• For payment problems:</span> Share the transaction details, including confirmation numbers.</p>
-            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted"><span class="font-bold text-ink">• For hire claims:</span> Attach timestamped photos or videos of the item before and after the hire, a description of the issue, and any supporting documents (e.g., proof of purchase).</p>
-            <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted"><span class="font-bold text-ink">• For other issues:</span> Be as specific as possible so we can assist you effectively.</p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">2. Provide Details:</span> Include
+            as much relevant information as possible:
+            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+              <span class="font-bold text-ink">• For technical issues:</span>{" "}
+              Describe the problem and tell us which device and browser you're
+              using.
+            </p>
+            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+              <span class="font-bold text-ink">• For payment problems:</span>{" "}
+              Share the transaction details, including confirmation numbers.
+            </p>
+            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+              <span class="font-bold text-ink">• For hire claims:</span> Attach
+              timestamped photos or videos of the item before and after the
+              hire, a description of the issue, and any supporting documents
+              (e.g., proof of purchase).
+            </p>
+            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+              <span class="font-bold text-ink">• For other issues:</span> Be as
+              specific as possible so we can assist you effectively.
+            </p>
           </p>
-          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
-            <span class="font-bold text-ink">3. Assessment:</span> We will review your case and may request additional information if needed.
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">3. Assessment:</span> We will
+            review your case and may request additional information if needed.
           </p>
-          <p class="mt-3.5 text-[15px] leading-relaxed font-semibold text-muted">
-            <span class="font-bold text-ink">4. Resolution:</span> Once we have all the information, we'll respond within 48 hours and work towards a fair resolution. Depending on the urgency and nature of your issue.
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">4. Resolution:</span> Once we have
+            all the information, we'll respond within 48 hours and work towards
+            a fair resolution. Depending on the urgency and nature of your
+            issue.
           </p>
         </details>
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
-          <summary
-            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
-          >
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
+            How does a security deposit work on Paddlme?
+          </summary>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            A security deposit is a refundable amount optionally set by a host to help protect their equipment against damage, loss, or late returns. It is not a part payment towards the rental itself.
+          </p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            If a listing has a security deposit, you'll see the amount in the listing description before you send a booking request. The security deposit is held on your card via Stripe from when you send a request. It is released if a request is declined or if it is cancelled. Equipment with a security deposit must be returned within 7 days of booking, because a card hold lasts about 7 days.
+          </p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            When a host marks their equipment as returned, the security deposit is released. Your bank may take a few days to remove the hold on your card.
+          </p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            Nothing is deducted automatically from a security deposit. If a host reports any damage or loss, Paddlme's support will review the evidence and you will have a chance to respond.
+          </p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            A host may require a security deposit when booking their equipment. This will be clearly stated in the listing description. 
+          </p>
+        </details>
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
+            What happens if I'm late returning the equipment?
+          </summary>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            If you're running late, please let your host know as soon as possible, so a later return time can be arranged, especially if you're only slightly delayed. A late return can affect other bookings.
+          </p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            Nothing is charged or automatically deducted from the security deposit for a late return. If a host reports any damage or loss, Paddlme's support will review the evidence and you will have a chance to respond. 
+          </p>
+        </details>
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
             How much does it cost to rent or list on Paddlme?
           </summary>
-          <p class="mt-3.5 text-[15px] leading-relaxed text-muted">
+          <p class="mt-3.5 text-[16px] leading-relaxed text-muted">
             It’s free to list your gear on Paddlme, with zero listing fees.
           </p>
-          <p class="mt-3.5 text-[15px] leading-relaxed text-muted">
-            Hosts set their own rental prices. For each booking paid through Paddlme, the host pays a 10% commission, automatically deducted from their payout.
+          <p class="mt-3.5 text-[16px] leading-relaxed text-muted">
+            Hosts set their own rental prices. For each booking paid through
+            Paddlme, the host pays a 10% commission, automatically deducted from
+            their payout.
           </p>
-          <p class="mt-3.5 text-[15px] leading-relaxed text-muted">
-            For customers, it’s free to browse and compare rental options. You pay the price shown for your booking, including any host delivery charges where applicable.
+          <p class="mt-3.5 text-[16px] leading-relaxed text-muted">
+            For customers, it’s free to browse and compare rental options. You
+            pay the price shown for your booking, including any host delivery
+            charges where applicable.
           </p>
         </details>
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
-          <summary
-            class="cursor-pointer list-none text-base font-bold text-ink [&::-webkit-details-marker]:hidden"
-          >
-            Is there an iPhone app?
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
+            What is Paddlme's cancellation policy?
           </summary>
-          <p class="mt-3.5 text-[15px] leading-relaxed text-muted">
-            Paddlme is on Android now, with iPhone following. This site works on
-            any device in the meantime.
+          <p class="mt-3.5 text-[16px] leading-relaxed text-muted">
+            Before a host accepts a rental request, the renter can withdraw it
+            at no cost and the host can decline it at no cost; the card hold is
+            released. The policy below applies once the host has accepted a
+            request.
+            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+              <span class="font-bold text-ink">For hosts:</span>
+              <br /> • If you can’t fulfil a confirmed booking, contact Sharehub
+              support straight away. The customer will receive a full refund.
+            </p>
+            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+              <span class="font-bold text-ink">For renters:</span>
+              <br /> • Cancellations made 24 hours or more before the
+              pick-up/drop off time receive a full refund.
+              <br />• Cancellations made within 24 hours of the pick-up/drop off
+              time are subject to a 50% cancellation fee.
+            </p>
+          </p>
+        </details>
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
+            How does the pickup, drop-off, return and payment process work?
+          </summary>
+            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+              <span class="font-bold text-ink">At Pickup or Drop-off:</span>
+              <br /> If a host offers drop-off or a renter chooses to pickup and has the capabilities to do so, they give the host a unique 6-digit code upon arrival. The host enters the code as part of the handover checklist, turning the confirmed booking to an active booking. The hosts payout is sent as soon as Stripe makes the funds available usually within a few days. 
+            </p>
+            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+              <span class="font-bold text-ink">At Return:</span>
+              <br /> Upon return, the host verifies the equipment condition, and marks the item as returned which then completes the booking and any bond is released. If a host hasn't marked their equipment as returned and no issue has been reported, then the booking will automatically complete after 3 days.
+            </p>
+        </details>
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
+            What kind of equipment is available to rent or list on Paddlme?
+          </summary>
+          <p class="mt-3.5 text-[16px] leading-relaxed text-muted">
+            Paddlme is focused on water sports equipment including kayaks, paddleboards, jet skis, and more. If it floats you'll find it here!
+            Paddlme is purely for rentals only, no selling of any items is allowed on the platform.
+          </p>
+        </details>
+        <details class="mb-3 rounded-xl bg-white px-5 py-4">
+          <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
+            Is there Paddlme mobile app?
+          </summary>
+          <p class="mt-3.5 text-[16px] leading-relaxed text-muted">
+            Yes, the Paddlme mobile app is currently in development for
+            Android and iOS, but in the meantime our website works on all devices.
           </p>
         </details>
       </div>
     </section>
 
-        <Footer />
+    <Footer />
 
     <script>
       import {
@@ -297,8 +434,8 @@ const site = 'https://paddlme.tech';
         orderBy,
         query,
         where,
-      } from 'firebase/firestore';
-      import { db } from '../lib/firebase';
+      } from "firebase/firestore";
+      import { db } from "../lib/firebase";
 
       type Listing = {
         id: string;
@@ -308,29 +445,29 @@ const site = 'https://paddlme.tech';
         image: string | null;
       };
 
-      const grid = document.getElementById('listings');
-      const status = document.getElementById('listing-status');
+      const grid = document.getElementById("listings");
+      const status = document.getElementById("listing-status");
 
       const cardClass =
-        'overflow-hidden rounded-2xl border border-line bg-white transition-shadow hover:shadow-[0_10px_28px_rgba(0,37,58,0.12)]';
+        "overflow-hidden rounded-2xl border border-line bg-white transition-shadow hover:shadow-[0_10px_28px_rgba(0,37,58,0.12)]";
 
       const escapeHtml = (value: string) =>
         value.replace(
           /[&<>"']/g,
           (char) =>
             ({
-              '&': '&amp;',
-              '<': '&lt;',
-              '>': '&gt;',
-              '"': '&quot;',
-              "'": '&#39;',
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
             })[char] as string,
         );
 
       const price = (value: number) =>
         Number.isFinite(value) && value > 0
           ? `NZ$${value.toFixed(0)}`
-          : 'Price on request';
+          : "Price on request";
 
       async function loadListings() {
         if (!grid || !status) return;
@@ -338,9 +475,9 @@ const site = 'https://paddlme.tech';
         try {
           const snapshot = await getDocs(
             query(
-              collection(db, 'equipment'),
-              where('isAvailable', '==', true),
-              orderBy('createdAt', 'desc'),
+              collection(db, "equipment"),
+              where("isAvailable", "==", true),
+              orderBy("createdAt", "desc"),
               limit(8),
             ),
           );
@@ -350,19 +487,20 @@ const site = 'https://paddlme.tech';
             const images = Array.isArray(data.imageUrls) ? data.imageUrls : [];
             return {
               id: doc.id,
-              title: data.title ?? 'Untitled gear',
-              location: data.location ?? 'Location to be confirmed',
+              title: data.title ?? "Untitled gear",
+              location: data.location ?? "Location to be confirmed",
               pricePerHour: Number(data.pricePerHour ?? 0),
               image: images.length > 0 ? String(images[0]) : null,
             };
           });
 
           if (listings.length === 0) {
-            status.textContent = 'New gear is being listed — check back shortly.';
+            status.textContent =
+              "New gear is being listed — check back shortly.";
             return;
           }
 
-          status.textContent = 'Fresh listings from hosts nearby';
+          status.textContent = "Fresh listings from hosts nearby";
           const cards = listings
             .map(
               (listing) => `
@@ -372,7 +510,7 @@ const site = 'https://paddlme.tech';
                     ? `<img class="aspect-[4/3] w-full object-cover" src="${escapeHtml(
                         listing.image,
                       )}" alt="${escapeHtml(listing.title)}" loading="lazy" />`
-                    : ''
+                    : ""
                 }
                 <div class="px-4 pb-4 pt-3.5">
                   <h3 class="mb-1 text-base font-bold">${escapeHtml(
@@ -387,61 +525,48 @@ const site = 'https://paddlme.tech';
                 </div>
               </article>`,
             )
-            .join('');
+            .join("");
 
           // Duplicated so the translate(-50%) loop is seamless.
           grid.innerHTML = cards + cards;
         } catch (error) {
-          console.error('Failed to load listings', error);
-          status.textContent = 'Listings are unavailable right now.';
+          console.error("Failed to load listings", error);
+          status.textContent = "Listings are unavailable right now.";
         }
       }
 
       document
-        .querySelectorAll<HTMLButtonElement>('[data-auth]')
+        .querySelectorAll<HTMLButtonElement>("[data-auth]")
         .forEach((button) => {
-          button.addEventListener('click', () => {
-            window.location.href = '/login';
+          button.addEventListener("click", () => {
+            window.location.href = "/login";
           });
         });
 
-      const navEl = document.getElementById('site-nav');
+      const navEl = document.getElementById("site-nav");
       if (navEl) {
         const sync = () =>
-          navEl.classList.toggle('is-scrolled', window.scrollY > 24);
+          navEl.classList.toggle("is-scrolled", window.scrollY > 24);
         sync();
-        window.addEventListener('scroll', sync, { passive: true });
+        window.addEventListener("scroll", sync, { passive: true });
       }
 
-      const community = document.querySelector('.community');
-      const communityBg = document.querySelector<HTMLElement>('.community-bg');
-      const reduceMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)',
-      ).matches;
-
-      if (community && communityBg && !reduceMotion) {
-        let ticking = false;
-
-        const updateParallax = () => {
-          ticking = false;
-          const rect = community.getBoundingClientRect();
-          const viewport = window.innerHeight;
-          if (rect.bottom < 0 || rect.top > viewport) return;
-
-          const progress = (viewport - rect.top) / (viewport + rect.height);
-          const shift = (progress - 0.5) * 80;
-          communityBg.style.transform = `translate3d(0, ${shift}px, 0) scale(1.12)`;
-        };
-
-        const requestUpdate = () => {
-          if (ticking) return;
-          ticking = true;
-          window.requestAnimationFrame(updateParallax);
-        };
-
-        updateParallax();
-        window.addEventListener('scroll', requestUpdate, { passive: true });
-        window.addEventListener('resize', requestUpdate, { passive: true });
+      const revealed = document.querySelectorAll(".reveal, .reveal-fade");
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: "0px 0px -48px 0px" },
+        );
+        revealed.forEach((el) => io.observe(el));
+      } else {
+        revealed.forEach((el) => el.classList.add("is-visible"));
       }
 
       loadListings();

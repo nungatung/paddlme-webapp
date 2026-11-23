@@ -103,6 +103,48 @@ section[id] {
   transform: translateY(1px) rotate(-135deg);
 }
 
+/* Hamburger: three bars that fold into an X when the parent details opens.
+   Driven by details[open] so no JS state is needed for the animation. */
+.burger-bar {
+  position: absolute;
+  left: 0;
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition:
+    transform 0.25s ease,
+    top 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.burger-bar:nth-child(1) {
+  top: 0;
+}
+
+.burger-bar:nth-child(2) {
+  top: 6px;
+}
+
+.burger-bar:nth-child(3) {
+  top: 12px;
+}
+
+details[open] .burger-bar:nth-child(1) {
+  top: 6px;
+  transform: rotate(45deg);
+}
+
+details[open] .burger-bar:nth-child(2) {
+  opacity: 0;
+}
+
+details[open] .burger-bar:nth-child(3) {
+  top: 6px;
+  transform: rotate(-45deg);
+}
+
 /* Featured listings: a headingless marquee under the hero, so cards are
    already partly visible on load rather than starting below the fold. */
 .listing-marquee {
@@ -135,5 +177,42 @@ section[id] {
   .listing-marquee {
     animation: none;
     overflow-x: auto;
+  }
+}
+
+/* Entry reveals: elements start shifted down and transparent, then ease in
+   when the observer marks them visible. Scoped to html.js so content still
+   shows when scripts never run. Stagger via --reveal-delay. */
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Fade-only variant for full-bleed bands, where a slide would look wrong. */
+html.js .reveal-fade {
+  opacity: 0;
+  transition: opacity 900ms ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html.js .reveal-fade.is-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal,
+  html.js .reveal-fade {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
