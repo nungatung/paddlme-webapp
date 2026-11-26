@@ -1,8 +1,9 @@
-﻿---
+---
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Hero from "../components/Hero.astro";
 import Footer from "../components/Footer.astro";
+import AuthModal from "../components/AuthModal.astro";
 
 const site = "https://paddlme.tech";
 ---
@@ -144,14 +145,11 @@ const site = "https://paddlme.tech";
       </div>
     </section>
 
-    <section
-      class="relative flex min-h-[80vh] items-center bg-[url(/omaha.webp)] bg-cover bg-center bg-no-repeat bg-fixed max-md:bg-scroll"
-    >
+    <section class="relative flex min-h-[80vh] items-center bg-[url(/omaha.webp)] bg-cover bg-center bg-no-repeat bg-fixed max-md:bg-scroll">
       <div
         class="absolute inset-0 bg-gradient-to-r from-ocean-950/45 via-ocean-950/15 to-transparent"
         aria-hidden="true"
-      >
-      </div>
+      ></div>
 
       <div class="relative z-10 ml-[max(24px,calc((100vw-1240px)/2))] max-w-[600px] py-16 pr-6">
         <h2 class="reveal text-[36px] font-extrabold leading-[1.15] text-white">
@@ -165,13 +163,12 @@ const site = "https://paddlme.tech";
           local hire shop, your booking keeps money circulating locally and
           helps more people get on the water.
         </p>
-        <button
-          type="button"
-          data-auth
-          class="reveal cursor-pointer rounded-full bg-accent px-6 py-4 text-[15px] font-bold text-white transition-[filter] hover:brightness-95 [--reveal-delay:240ms]"
+        <a
+          href="/browse"
+          class="reveal inline-block cursor-pointer rounded-full bg-accent px-6 py-4 text-[15px] font-bold text-white no-underline transition-[filter] hover:brightness-95 [--reveal-delay:240ms]"
         >
           Browse listings
-        </button>
+        </a>
       </div>
     </section>
 
@@ -216,7 +213,7 @@ const site = "https://paddlme.tech";
           </div>
           <button
             type="button"
-            data-auth
+            data-auth="signup"
             class="cursor-pointer rounded-full bg-accent px-6 py-4 text-[15px] font-bold text-white transition-[filter] hover:brightness-95"
           >
             Create a listing
@@ -259,7 +256,8 @@ const site = "https://paddlme.tech";
             At handover the host records the gear's condition, confirms the
             safety briefing, and the renter acknowledges the gear matches the
             listing. The 6-digit code is there to prove the checklist has been
-            completed. After completion the booking is moved to active and the hosts payout is initiated.
+            completed. After completion the booking is moved to active and the
+            hosts payout is initiated.
           </p>
         </details>
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
@@ -323,19 +321,31 @@ const site = "https://paddlme.tech";
             How does a security deposit work on Paddlme?
           </summary>
           <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
-            A security deposit is a refundable amount optionally set by a host to help protect their equipment against damage, loss, or late returns. It is not a part payment towards the rental itself.
+            A security deposit is a refundable amount optionally set by a host
+            to help protect their equipment against damage, loss, or late
+            returns. It is not a part payment towards the rental itself.
           </p>
           <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
-            If a listing has a security deposit, you'll see the amount in the listing description before you send a booking request. The security deposit is held on your card via Stripe from when you send a request. It is released if a request is declined or if it is cancelled. Equipment with a security deposit must be returned within 7 days of booking, because a card hold lasts about 7 days.
+            If a listing has a security deposit, you'll see the amount in the
+            listing description before you send a booking request. The security
+            deposit is held on your card via Stripe from when you send a
+            request. It is released if a request is declined or if it is
+            cancelled. Equipment with a security deposit must be returned within
+            7 days of booking, because a card hold lasts about 7 days.
           </p>
           <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
-            When a host marks their equipment as returned, the security deposit is released. Your bank may take a few days to remove the hold on your card.
+            When a host marks their equipment as returned, the security deposit
+            is released. Your bank may take a few days to remove the hold on
+            your card.
           </p>
           <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
-            Nothing is deducted automatically from a security deposit. If a host reports any damage or loss, Paddlme's support will review the evidence and you will have a chance to respond.
+            Nothing is deducted automatically from a security deposit. If a host
+            reports any damage or loss, Paddlme's support will review the
+            evidence and you will have a chance to respond.
           </p>
           <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
-            A host may require a security deposit when booking their equipment. This will be clearly stated in the listing description. 
+            A host may require a security deposit when booking their equipment.
+            This will be clearly stated in the listing description.
           </p>
         </details>
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
@@ -343,10 +353,16 @@ const site = "https://paddlme.tech";
             What happens if I'm late returning the equipment?
           </summary>
           <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
-            If you're running late, please let your host know as soon as possible, so a later return time can be arranged, especially if you're only slightly delayed. A late return can affect other bookings.
+            If you're running late, please let your host know as soon as
+            possible, so a later return time can be arranged, especially if
+            you're only slightly delayed. A late return can affect other
+            bookings.
           </p>
           <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
-            Nothing is charged or automatically deducted from the security deposit for a late return. If a host reports any damage or loss, Paddlme's support will review the evidence and you will have a chance to respond. 
+            Nothing is charged or automatically deducted from the security
+            deposit for a late return. If a host reports any damage or loss,
+            Paddlme's support will review the evidence and you will have a
+            chance to respond.
           </p>
         </details>
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
@@ -394,22 +410,33 @@ const site = "https://paddlme.tech";
           <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
             How does the pickup, drop-off, return and payment process work?
           </summary>
-            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
-              <span class="font-bold text-ink">At Pickup or Drop-off:</span>
-              <br /> If a host offers drop-off or a renter chooses to pickup and has the capabilities to do so, they give the host a unique 6-digit code upon arrival. The host enters the code as part of the handover checklist, turning the confirmed booking to an active booking. The hosts payout is sent as soon as Stripe makes the funds available usually within a few days. 
-            </p>
-            <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
-              <span class="font-bold text-ink">At Return:</span>
-              <br /> Upon return, the host verifies the equipment condition, and marks the item as returned which then completes the booking and any bond is released. If a host hasn't marked their equipment as returned and no issue has been reported, then the booking will automatically complete after 3 days.
-            </p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">At Pickup or Drop-off:</span>
+            <br /> If a host offers drop-off or a renter chooses to pickup and
+            has the capabilities to do so, they give the host a unique 6-digit
+            code upon arrival. The host enters the code as part of the handover
+            checklist, turning the confirmed booking to an active booking. The
+            hosts payout is sent as soon as Stripe makes the funds available
+            usually within a few days.
+          </p>
+          <p class="mt-3.5 text-[16px] leading-relaxed font-semibold text-muted">
+            <span class="font-bold text-ink">At Return:</span>
+            <br /> Upon return, the host verifies the equipment condition, and
+            marks the item as returned which then completes the booking and any
+            bond is released. If a host hasn't marked their equipment as
+            returned and no issue has been reported, then the booking will
+            automatically complete after 3 days.
+          </p>
         </details>
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
           <summary class="cursor-pointer list-none text-[20px] font-bold text-ink [&::-webkit-details-marker]:hidden">
             What kind of equipment is available to rent or list on Paddlme?
           </summary>
           <p class="mt-3.5 text-[16px] leading-relaxed text-muted">
-            Paddlme is focused on water sports equipment including kayaks, paddleboards, jet skis, and more. If it floats you'll find it here!
-            Paddlme is purely for rentals only, no selling of any items is allowed on the platform.
+            Paddlme is focused on water sports equipment including kayaks,
+            paddleboards, jet skis, and more. If it floats you'll find it here!
+            Paddlme is purely for rentals only, no selling of any items is
+            allowed on the platform.
           </p>
         </details>
         <details class="mb-3 rounded-xl bg-white px-5 py-4">
@@ -417,14 +444,16 @@ const site = "https://paddlme.tech";
             Is there Paddlme mobile app?
           </summary>
           <p class="mt-3.5 text-[16px] leading-relaxed text-muted">
-            Yes, the Paddlme mobile app is currently in development for
-            Android and iOS, but in the meantime our website works on all devices.
+            Yes, the Paddlme mobile app is currently in development for Android
+            and iOS, but in the meantime our website works on all devices.
           </p>
         </details>
       </div>
     </section>
 
     <Footer />
+
+    <AuthModal />
 
     <script>
       import {
@@ -533,22 +562,6 @@ const site = "https://paddlme.tech";
           console.error("Failed to load listings", error);
           status.textContent = "Listings are unavailable right now.";
         }
-      }
-
-      document
-        .querySelectorAll<HTMLButtonElement>("[data-auth]")
-        .forEach((button) => {
-          button.addEventListener("click", () => {
-            window.location.href = "/login";
-          });
-        });
-
-      const navEl = document.getElementById("site-nav");
-      if (navEl) {
-        const sync = () =>
-          navEl.classList.toggle("is-scrolled", window.scrollY > 24);
-        sync();
-        window.addEventListener("scroll", sync, { passive: true });
       }
 
       const revealed = document.querySelectorAll(".reveal, .reveal-fade");

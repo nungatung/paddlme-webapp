@@ -1,26 +1,57 @@
 ---
-// The site header. Kept as its own component so the page reads as content
-// rather than one long document. The desktop dropdown and the mobile menu are
-// both <details> elements, so the browser owns the open/close state and the
-// script only handles closing them.
+// The site header. Supports two visual modes:
+// - default (transparent, used on the hero-based homepage)
+// - solid   (white background, used on inner pages like /browse)
+interface Props {
+  variant?: 'default' | 'solid';
+}
+const { variant = 'default' } = Astro.props;
+const isSolid = variant === 'solid';
 ---
 
 <header
   id="site-nav"
-  class="fixed inset-x-0 top-0 z-30 flex h-[74px] items-center bg-gradient-to-b from-ocean-900/90 to-transparent backdrop-blur-md transition-colors [&.is-scrolled]:border-b [&.is-scrolled]:border-white/10 [&.is-scrolled]:bg-ocean-950/95"
+  class:list={[
+    'fixed inset-x-0 top-0 z-30 flex h-[74px] items-center transition-colors',
+    isSolid
+      ? 'border-b border-line bg-white shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+      : 'bg-gradient-to-b from-ocean-900/90 to-transparent backdrop-blur-md [&.is-scrolled]:border-b [&.is-scrolled]:border-white/10 [&.is-scrolled]:bg-ocean-950/95',
+  ]}
+  data-variant={variant}
 >
   <div class="mx-auto flex w-full max-w-[1240px] items-center gap-3 px-8">
     <a href="/" class="flex items-center gap-2.5 no-underline">
       <img src="/logo3v1.png" alt="" height="55" class="h-[55px] w-auto" />
-      <span class="font-brand text-[30px] tracking-[-0.5px] text-white">
+      <span
+        class:list={[
+          'font-brand text-[30px] tracking-[-0.5px]',
+          isSolid ? 'text-ocean-950' : 'text-white',
+        ]}
+      >
         Paddlme
       </span>
     </a>
 
     <nav class="ml-12 hidden items-center gap-7 md:flex">
+      <a
+        href="/browse"
+        class:list={[
+          'text-sm font-semibold transition-colors',
+          isSolid
+            ? 'text-ink/70 hover:text-ink'
+            : 'text-white/80 hover:text-white',
+        ]}
+      >
+        Browse all gear
+      </a>
       <details class="drop relative">
         <summary
-          class="cursor-pointer list-none text-sm font-semibold text-white/80 transition-colors hover:text-white [&::-webkit-details-marker]:hidden"
+          class:list={[
+            'cursor-pointer list-none text-sm font-semibold transition-colors [&::-webkit-details-marker]:hidden',
+            isSolid
+              ? 'text-ink/70 hover:text-ink'
+              : 'text-white/80 hover:text-white',
+          ]}
         >
           How Paddlme works
         </summary>
@@ -28,12 +59,12 @@
           class="absolute left-[-12px] top-[34px] flex min-w-[232px] flex-col rounded-xl border border-line bg-white p-2 shadow-[0_12px_32px_rgba(0,37,58,0.18)]"
         >
           <a
-            href="#how-to-rent"
+            href="/#how-to-rent"
             class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
             >How to rent</a
           >
           <a
-            href="#how-to-list"
+            href="/#how-to-list"
             class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
             >How to rent out</a
           >
@@ -41,31 +72,77 @@
       </details>
       <a
         href="/#faqs"
-        class="text-sm font-semibold text-white/80 transition-colors hover:text-white"
+        class:list={[
+          'text-sm font-semibold transition-colors',
+          isSolid
+            ? 'text-ink/70 hover:text-ink'
+            : 'text-white/80 hover:text-white',
+        ]}
         >FAQs</a
       >
     </nav>
 
-    <div class="ml-auto hidden gap-2.5 md:flex">
+    <div id="nav-desktop-guest-actions" class="ml-auto hidden gap-2.5 md:flex" hidden>
       <button
         type="button"
-        data-auth
-        class="cursor-pointer rounded-full border border-white/30 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition-colors hover:bg-white/20"
+        data-auth="signup"
+        class:list={[
+          'cursor-pointer rounded-full px-5 py-3 text-sm font-bold transition-colors',
+          isSolid
+            ? 'border border-line bg-white text-ink hover:bg-[#f6f8f9]'
+            : 'border border-white/30 bg-white/10 text-white backdrop-blur hover:bg-white/20',
+        ]}
       >
         List an item
       </button>
       <button
         type="button"
-        data-auth
+        data-auth="login"
         class="cursor-pointer rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
       >
         Login or Sign Up
       </button>
     </div>
+    <div id="nav-desktop-user-actions" class="ml-auto hidden items-center gap-2.5 md:flex" hidden>
+      <a
+        href="/messages"
+        class:list={[
+          'rounded-full border px-5 py-3 text-sm font-bold no-underline transition-colors',
+          isSolid
+            ? 'border-line bg-white text-ink hover:bg-[#f6f8f9]'
+            : 'border-white/30 bg-white/10 text-white backdrop-blur hover:bg-white/20',
+        ]}
+      >
+        Messages
+      </a>
+      <a
+        href="/profile"
+        class:list={[
+          'rounded-full border px-5 py-3 text-sm font-bold no-underline transition-colors',
+          isSolid
+            ? 'border-line bg-white text-ink hover:bg-[#f6f8f9]'
+            : 'border-white/30 bg-white/10 text-white backdrop-blur hover:bg-white/20',
+        ]}
+      >
+        My profile
+      </a>
+      <button
+        type="button"
+        data-auth-signout
+        class="cursor-pointer rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
+      >
+        Sign out
+      </button>
+    </div>
 
     <details class="mdrop relative ml-auto md:hidden">
       <summary
-        class="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 [&::-webkit-details-marker]:hidden"
+        class:list={[
+          'flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-full transition-colors [&::-webkit-details-marker]:hidden',
+          isSolid
+            ? 'text-ink hover:bg-ink/5'
+            : 'text-white hover:bg-white/10',
+        ]}
         aria-label="Menu"
       >
         <span class="relative block h-[14px] w-[20px]">
@@ -78,43 +155,115 @@
         class="absolute right-0 top-[calc(100%+12px)] flex w-[264px] flex-col rounded-xl border border-line bg-white p-3 shadow-[0_12px_32px_rgba(0,37,58,0.18)]"
       >
         <a
-          href="#how-to-rent"
+          href="/browse"
+          class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
+          >Browse gear</a
+        >
+        <a
+          href="/#how-to-rent"
           class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
           >How to rent</a
         >
         <a
-          href="#how-to-list"
+          href="/#how-to-list"
           class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
           >How to rent out</a
         >
         <a
-          href="#faqs"
+          href="/#faqs"
           class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-[#f6f8f9]"
           >FAQs</a
         >
 
         <div class="my-2.5 border-t border-line"></div>
 
-        <button
-          type="button"
-          data-auth
-          class="rounded-full border border-line px-5 py-3 text-sm font-bold text-ink transition-colors hover:bg-[#f6f8f9]"
-        >
-          List an item
-        </button>
-        <button
-          type="button"
-          data-auth
-          class="mt-2 rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
-        >
-          Login or Sign Up
-        </button>
+        <div id="nav-mobile-guest-actions" class="flex flex-col gap-2" hidden>
+          <button
+            type="button"
+            data-auth="signup"
+            class="rounded-full border border-line px-5 py-3 text-sm font-bold text-ink transition-colors hover:bg-[#f6f8f9]"
+          >
+            List an item
+          </button>
+          <button
+            type="button"
+            data-auth="login"
+            class="rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
+          >
+            Login or Sign Up
+          </button>
+        </div>
+        <div id="nav-mobile-user-actions" class="flex flex-col gap-2" hidden>
+          <a
+            href="/messages"
+            class="rounded-full border border-line px-5 py-3 text-center text-sm font-bold text-ink no-underline transition-colors hover:bg-[#f6f8f9]"
+          >
+            Messages
+          </a>
+          <a
+            href="/profile"
+            class="rounded-full border border-line px-5 py-3 text-center text-sm font-bold text-ink no-underline transition-colors hover:bg-[#f6f8f9]"
+          >
+            My profile
+          </a>
+          <button
+            type="button"
+            data-auth-signout
+            class="rounded-full bg-accent px-5 py-3 text-sm font-bold text-white transition-[filter] hover:brightness-95"
+          >
+            Sign out
+          </button>
+        </div>
       </div>
     </details>
   </div>
 </header>
 
+<div
+  id="signout-confirmation"
+  class="auth-overlay fixed inset-0 z-[70] grid place-items-center bg-ocean-950/60 p-4 backdrop-blur-[2px]"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="signout-confirmation-title"
+  aria-describedby="signout-confirmation-description"
+  hidden
+>
+  <section class="auth-card w-full max-w-sm rounded-3xl border border-white/30 bg-white p-6 shadow-2xl sm:p-7">
+    <div class="grid h-11 w-11 place-items-center rounded-2xl bg-ocean-50 text-ocean-700">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10 17l5-5-5-5M15 12H3"></path><path d="M12 3h6a2 2 0 012 2v14a2 2 0 01-2 2h-6"></path>
+      </svg>
+    </div>
+    <h2 id="signout-confirmation-title" class="mt-4 text-xl font-extrabold tracking-tight text-ocean-950">
+      Sign out?
+    </h2>
+    <p id="signout-confirmation-description" class="mt-2 text-sm leading-6 text-muted">
+      Are you sure you want to sign out of your Paddlme account?
+    </p>
+    <p id="signout-confirmation-error" class="mt-3 hidden rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700" role="alert"></p>
+    <div class="mt-6 flex justify-end gap-2">
+      <button
+        id="signout-cancel"
+        type="button"
+        class="cursor-pointer rounded-full border border-line bg-white px-4 py-2.5 text-sm font-bold text-ink transition-colors hover:bg-[#f6f8f9]"
+      >
+        Cancel
+      </button>
+      <button
+        id="signout-confirm"
+        type="button"
+        class="cursor-pointer rounded-full bg-ocean-950 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-ocean-800 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        Sign out
+      </button>
+    </div>
+  </section>
+</div>
+
 <script>
+  import { signOut, onAuthStateChanged } from 'firebase/auth';
+  import { auth } from '../lib/firebase';
+
   // The two menus are <details> elements; clicking outside, clicking an item
   // inside, or pressing Escape closes them.
   const menus = document.querySelectorAll<HTMLDetailsElement>(
@@ -142,4 +291,108 @@
       menus.forEach(close);
     }
   });
+
+  const desktopGuestActions = document.getElementById(
+    'nav-desktop-guest-actions',
+  );
+  const desktopUserActions = document.getElementById(
+    'nav-desktop-user-actions',
+  );
+  const mobileGuestActions = document.getElementById(
+    'nav-mobile-guest-actions',
+  );
+  const mobileUserActions = document.getElementById(
+    'nav-mobile-user-actions',
+  );
+  const signOutDialog = document.getElementById('signout-confirmation');
+  const signOutError = document.getElementById('signout-confirmation-error');
+  const signOutCancel = document.getElementById('signout-cancel');
+  const signOutConfirm = document.getElementById(
+    'signout-confirm',
+  ) as HTMLButtonElement | null;
+  let signOutOpener: HTMLElement | null = null;
+  let signOutHideTimer: number | undefined;
+
+  onAuthStateChanged(auth, (user) => {
+    desktopGuestActions?.toggleAttribute('hidden', Boolean(user));
+    desktopUserActions?.toggleAttribute('hidden', !user);
+    mobileGuestActions?.toggleAttribute('hidden', Boolean(user));
+    mobileUserActions?.toggleAttribute('hidden', !user);
+  });
+
+  const closeSignOutDialog = () => {
+    if (!signOutDialog || signOutDialog.hasAttribute('hidden')) return;
+    signOutDialog.classList.remove('is-open');
+    window.clearTimeout(signOutHideTimer);
+    signOutHideTimer = window.setTimeout(() => {
+      signOutDialog.setAttribute('hidden', '');
+      const menuSummary =
+        signOutOpener?.closest('details.mdrop')?.querySelector<HTMLElement>(
+          'summary',
+        );
+      (menuSummary ?? signOutOpener)?.focus();
+      signOutOpener = null;
+    }, 220);
+  };
+
+  const openSignOutDialog = (opener: HTMLElement) => {
+    if (!signOutDialog || !signOutCancel || !signOutError) return;
+    window.clearTimeout(signOutHideTimer);
+    signOutOpener = opener;
+    signOutError.textContent = '';
+    signOutError.classList.add('hidden');
+    signOutDialog.removeAttribute('hidden');
+    void signOutDialog.offsetWidth;
+    signOutDialog.classList.add('is-open');
+    signOutCancel.focus();
+  };
+
+  signOutCancel?.addEventListener('click', closeSignOutDialog);
+  signOutDialog?.addEventListener('click', (event) => {
+    if (event.target === signOutDialog) closeSignOutDialog();
+  });
+
+  document
+    .querySelectorAll<HTMLButtonElement>('[data-auth-signout]')
+    .forEach((button) => {
+      button.addEventListener('click', () => {
+        openSignOutDialog(button);
+      });
+    });
+
+  signOutConfirm?.addEventListener('click', async () => {
+    if (!signOutConfirm || !signOutError) return;
+    signOutConfirm.disabled = true;
+    signOutConfirm.textContent = 'Signing out…';
+    signOutError.textContent = '';
+    signOutError.classList.add('hidden');
+    try {
+      await signOut(auth);
+      closeSignOutDialog();
+    } catch (error) {
+      console.error('Failed to sign out:', error);
+      signOutError.textContent =
+        'We couldn’t sign you out. Please try again.';
+      signOutError.classList.remove('hidden');
+    } finally {
+      signOutConfirm.disabled = false;
+      signOutConfirm.textContent = 'Sign out';
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && signOutDialog && !signOutDialog.hasAttribute('hidden')) {
+      event.preventDefault();
+      closeSignOutDialog();
+    }
+  });
+
+  // Scroll-based styling only applies to the transparent (default) variant
+  const navEl = document.getElementById('site-nav');
+  if (navEl && navEl.dataset.variant !== 'solid') {
+    const sync = () =>
+      navEl.classList.toggle('is-scrolled', window.scrollY > 24);
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+  }
 </script>
