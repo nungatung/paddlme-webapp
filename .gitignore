@@ -23,5 +23,6 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-.commancode
+.commandcode
 --full-page
+mcp_config.json
