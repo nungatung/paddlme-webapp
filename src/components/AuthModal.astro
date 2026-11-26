@@ -1,0 +1,724 @@
+---
+// Login and signup modals in one card, matching the structure of the Sharehub
+// reference shots but in Paddlme's own language: ocean inks, accent pill CTAs,
+// Manrope. Every [data-auth] trigger on the page opens it; triggers carrying
+// data-auth="signup" land on the create-account panel.
+---
+
+<div
+  id="auth-overlay"
+  class="auth-overlay fixed inset-0 z-50 hidden overflow-y-auto bg-ocean-950/60 backdrop-blur-[2px]"
+>
+  <div class="flex min-h-full items-center justify-center p-4 sm:p-6">
+    <div class="auth-card relative w-full max-w-[440px] rounded-2xl bg-white p-7 shadow-[0_24px_64px_rgba(0,37,58,0.35)] sm:p-8">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2 no-underline">
+          <img
+            src="/logo3v1.png"
+            alt=""
+            width="36"
+            height="36"
+            class="h-9 w-auto"
+          />
+          <span class="font-brand text-[24px] tracking-[-0.5px] text-ocean-950">
+            Paddlme
+          </span>
+        </a>
+        <button
+          type="button"
+          data-auth-close
+          aria-label="Close"
+          class="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-[#f6f8f9] hover:text-ink"
+        >
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div
+        id="auth-login"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-login-title"
+      >
+        <h2
+          id="auth-login-title"
+          class="mt-5 text-[26px] font-extrabold tracking-[-0.01em] text-ocean-950"
+        >
+          Log in
+        </h2>
+
+        <form id="auth-login-form" class="mt-5" novalidate>
+          <p
+            id="auth-login-error"
+            role="alert"
+            class="mb-4 hidden rounded-lg bg-accent/10 px-3 py-2.5 text-sm font-semibold text-[#c2410c]"
+          ></p>
+          <div>
+            <label
+              for="login-email"
+              class="mb-1.5 block text-sm font-bold text-ink"
+            >
+              Email or username
+            </label>
+            <input
+              id="login-email"
+              name="email"
+              type="text"
+              autocomplete="username"
+              required
+              placeholder="you@example.com or username"
+              class="auth-input"
+            />
+          </div>
+          <div class="mt-4">
+            <label
+              for="login-password"
+              class="mb-1.5 block text-sm font-bold text-ink"
+            >
+              Password
+            </label>
+            <div class="relative">
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                class="auth-input pr-16"
+              />
+              <button
+                type="button"
+                data-auth-toggle="login-password"
+                aria-pressed="false"
+                class="absolute inset-y-0 right-3 my-auto h-fit text-sm font-bold text-ocean-500 transition-colors hover:text-ocean-700"
+              >
+                Show
+              </button>
+            </div>
+          </div>
+          <p class="mt-3 text-sm text-muted">
+            Forgot your password?
+            <a
+              href="mailto:paddlme.contact@gmail.com"
+              class="font-bold text-ocean-500 underline underline-offset-2 transition-colors hover:text-ocean-700"
+            >
+              {" "}
+              Reset it
+            </a>
+          </p>
+          <button
+            type="submit"
+            class="cursor-pointer mt-5 flex h-12 w-full items-center justify-center rounded-full bg-accent text-[15px] font-bold text-white transition-[filter] hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Log in
+          </button>
+          <div class="mt-5 flex items-center gap-4" aria-hidden="true">
+            <span class="h-px flex-1 bg-line"></span>
+            <span class="text-sm text-muted">or</span>
+            <span class="h-px flex-1 bg-line"></span>
+          </div>
+          <button
+            type="button"
+            data-auth-google
+            class="cursor-pointer mt-5 flex h-12 w-full items-center justify-center gap-3 rounded-full border border-line bg-white text-[15px] font-bold text-ink transition-colors hover:bg-[#f6f8f9] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 18 18" aria-hidden="true">
+              <path
+                fill="#4285F4"
+                d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+              ></path>
+              <path
+                fill="#34A853"
+                d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
+              ></path>
+              <path
+                fill="#FBBC05"
+                d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957a8.996 8.996 0 0 0 0 8.084l3.007-2.332z"
+              ></path>
+              <path
+                fill="#EA4335"
+                d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
+              ></path>
+            </svg>
+            Continue with Google
+          </button>
+        </form>
+      </div>
+
+      <div
+        id="auth-signup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-signup-title"
+        hidden
+      >
+        <h2
+          id="auth-signup-title"
+          class="mt-5 text-[26px] font-extrabold tracking-[-0.01em] text-ocean-950"
+        >
+          Create your account
+        </h2>
+        <p class="mt-1.5 text-[15px] text-muted">
+          Rent gear near you, or list your own to earn.
+        </p>
+
+        <form id="auth-signup-form" class="mt-5" novalidate>
+          <p
+            id="auth-signup-error"
+            role="alert"
+            class="mb-4 hidden rounded-lg bg-accent/10 px-3 py-2.5 text-sm font-semibold text-[#c2410c]"
+          ></p>
+          <button
+            type="button"
+            data-auth-google
+            class="cursor-pointer flex h-12 w-full items-center justify-center gap-3 rounded-full border border-line bg-white text-[15px] font-bold text-ink transition-colors hover:bg-[#f6f8f9] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 18 18" aria-hidden="true">
+              <path
+                fill="#4285F4"
+                d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+              ></path>
+              <path
+                fill="#34A853"
+                d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
+              ></path>
+              <path
+                fill="#FBBC05"
+                d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957a8.996 8.996 0 0 0 0 8.084l3.007-2.332z"
+              ></path>
+              <path
+                fill="#EA4335"
+                d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
+              ></path>
+            </svg>
+            Continue with Google
+          </button>
+          <div class="mt-5 flex items-center gap-4" aria-hidden="true">
+            <span class="h-px flex-1 bg-line"></span>
+            <span class="text-sm text-muted">or sign up with email</span>
+            <span class="h-px flex-1 bg-line"></span>
+          </div>
+          <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label
+                for="signup-first-name"
+                class="mb-1.5 block text-sm font-bold text-ink"
+              >
+                First name
+              </label>
+              <input
+                id="signup-first-name"
+                name="firstName"
+                type="text"
+                autocomplete="given-name"
+                required
+                placeholder="First name"
+                class="auth-input"
+              />
+            </div>
+            <div>
+              <label
+                for="signup-last-name"
+                class="mb-1.5 block text-sm font-bold text-ink"
+              >
+                Last name
+              </label>
+              <input
+                id="signup-last-name"
+                name="lastName"
+                type="text"
+                autocomplete="family-name"
+                required
+                placeholder="Last name"
+                class="auth-input"
+              />
+            </div>
+          </div>
+          <div class="mt-4">
+            <label
+              for="signup-username"
+              class="mb-1.5 block text-sm font-bold text-ink"
+            >
+              Username
+            </label>
+            <input
+              id="signup-username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              autocapitalize="none"
+              required
+              minlength="3"
+              maxlength="20"
+              pattern="[A-Za-z0-9_]{3,20}"
+              placeholder="your_username"
+              class="auth-input"
+            />
+            <p class="mt-1.5 text-sm text-muted">
+              3–20 characters: letters, numbers, and underscores.
+            </p>
+          </div>
+          <div class="mt-4">
+            <label
+              for="signup-email"
+              class="mb-1.5 block text-sm font-bold text-ink"
+            >
+              Email
+            </label>
+            <input
+              id="signup-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              placeholder="you@example.com"
+              class="auth-input"
+            />
+          </div>
+          <div class="mt-4">
+            <label
+              for="signup-password"
+              class="mb-1.5 block text-sm font-bold text-ink"
+            >
+              Password
+            </label>
+            <div class="relative">
+              <input
+                id="signup-password"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                required
+                minlength="8"
+                class="auth-input pr-16"
+              />
+              <button
+                type="button"
+                data-auth-toggle="signup-password"
+                aria-pressed="false"
+                class="absolute inset-y-0 right-3 my-auto h-fit text-sm font-bold text-ocean-500 transition-colors hover:text-ocean-700"
+              >
+                Show
+              </button>
+            </div>
+            <p class="mt-1.5 text-sm text-muted">Use at least 8 characters.</p>
+          </div>
+          <div class="mt-4">
+            <label class="flex items-start gap-3 text-sm text-ink">
+              <input
+                type="checkbox"
+                name="ageConfirm"
+                required
+                class="cursor-pointer mt-0.5 h-4 w-4 shrink-0 rounded accent-[#f26b21]"
+              />
+              <span>I confirm I am 18 or older.</span>
+            </label>
+          </div>
+          <p class="mt-4 text-sm leading-relaxed text-muted">
+            By selecting Agree &amp; create account, you agree to our
+            <a
+              href="/terms"
+              class="font-semibold text-ocean-500 underline underline-offset-2 transition-colors hover:text-ocean-700"
+            >
+              Terms of Service
+            </a>
+            and acknowledge our
+            <a
+              href="/privacy"
+              class="font-semibold text-ocean-500 underline underline-offset-2 transition-colors hover:text-ocean-700"
+            >
+              {" "}
+              Privacy Policy
+            </a>
+            .
+          </p>
+          <button
+            type="submit"
+            class="cursor-pointer mt-5 flex h-12 w-full items-center justify-center rounded-full bg-accent text-[15px] font-bold text-white transition-[filter] hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Agree &amp; create account
+          </button>
+        </form>
+      </div>
+
+      <p class="mt-6 text-center text-sm text-muted">
+        <span data-auth-footer="login">
+          New to Paddlme?
+          <button
+            type="button"
+            data-auth-switch="signup"
+            class="cursor-pointer font-bold text-ocean-500 underline underline-offset-2 transition-colors hover:text-ocean-700"
+          >
+            Create an account
+          </button>
+        </span>
+        <span data-auth-footer="signup" hidden>
+          Already have an account?
+          <button
+            type="button"
+            data-auth-switch="login"
+            class="cursor-pointer font-bold text-ocean-500 underline underline-offset-2 transition-colors hover:text-ocean-700"
+          >
+            Log in
+          </button>
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { auth, db } from "../lib/firebase";
+  import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    limit,
+    query,
+    setDoc,
+    where,
+  } from "firebase/firestore";
+  import {
+    GoogleAuthProvider,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    updateProfile,
+    type User,
+  } from "firebase/auth";
+
+  const overlay = document.getElementById("auth-overlay");
+  const card = overlay?.querySelector<HTMLElement>(".auth-card");
+  const panels = {
+    login: document.getElementById("auth-login"),
+    signup: document.getElementById("auth-signup"),
+  };
+  const footers = {
+    login: document.querySelector<HTMLElement>('[data-auth-footer="login"]'),
+    signup: document.querySelector<HTMLElement>('[data-auth-footer="signup"]'),
+  };
+
+  if (overlay && card && panels.login && panels.signup) {
+    let active: "login" | "signup" = "login";
+    let opener: HTMLElement | null = null;
+    let hideTimer: number | undefined;
+
+    const setError = (panel: "login" | "signup", message: string) => {
+      const el = document.getElementById(`auth-${panel}-error`);
+      if (!el) return;
+      el.textContent = message;
+      el.classList.toggle("hidden", message === "");
+    };
+
+    const showPanel = (panel: "login" | "signup", moveFocus = false) => {
+      active = panel;
+      panels.login.hidden = panel !== "login";
+      panels.signup.hidden = panel !== "signup";
+      footers.login?.toggleAttribute("hidden", panel !== "login");
+      footers.signup?.toggleAttribute("hidden", panel !== "signup");
+      setError("login", "");
+      setError("signup", "");
+      if (moveFocus) {
+        panels[panel].querySelector<HTMLElement>("input")?.focus();
+      }
+    };
+
+    const open = (panel: "login" | "signup") => {
+      window.clearTimeout(hideTimer);
+      opener = document.activeElement as HTMLElement | null;
+      showPanel(panel);
+      overlay.classList.remove("hidden");
+      document.documentElement.style.overflow = "hidden";
+      requestAnimationFrame(() => {
+        overlay.classList.add("is-open");
+        panels[panel].querySelector<HTMLElement>("input")?.focus();
+      });
+    };
+
+    const close = () => {
+      if (overlay.classList.contains("hidden")) return;
+      overlay.classList.remove("is-open");
+      document.documentElement.style.overflow = "";
+      hideTimer = window.setTimeout(() => overlay.classList.add("hidden"), 220);
+      opener?.focus();
+      opener = null;
+    };
+
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const trigger = target.closest<HTMLElement>("[data-auth]");
+      if (!trigger) return;
+      open(trigger.dataset.auth === "signup" ? "signup" : "login");
+    });
+
+    overlay.querySelectorAll("[data-auth-close]").forEach((el) => {
+      el.addEventListener("click", close);
+    });
+
+    document
+      .querySelectorAll<HTMLElement>("[data-auth-switch]")
+      .forEach((el) => {
+        el.addEventListener("click", () => {
+          showPanel(
+            el.dataset.authSwitch === "signup" ? "signup" : "login",
+            true,
+          );
+        });
+      });
+
+    // Clicking the dimmed area around the card closes it; clicks inside the
+    // card (including on the wrapper padding) do not.
+    overlay.addEventListener("click", (event) => {
+      if (!card.contains(event.target as Node)) close();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (overlay.classList.contains("hidden")) return;
+      if (event.key === "Escape") {
+        close();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      // Keep Tab cycling inside whichever dialog is showing.
+      const scope = '[role="dialog"]:not([hidden])';
+      const focusables = card.querySelectorAll<HTMLElement>(
+        `${scope} a[href], ${scope} button:not([disabled]), ${scope} input`,
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-auth-toggle]")
+      .forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+          const input = toggle.dataset.authToggle
+            ? document.getElementById(toggle.dataset.authToggle)
+            : null;
+          if (!(input instanceof HTMLInputElement)) return;
+          const showing = input.type === "text";
+          input.type = showing ? "password" : "text";
+          toggle.textContent = showing ? "Show" : "Hide";
+          toggle.setAttribute("aria-pressed", String(!showing));
+        });
+      });
+
+    const messages: Record<string, string> = {
+      "auth/invalid-credential":
+        "That email and password don't match an account.",
+      "auth/user-not-found": "That email and password don't match an account.",
+      "auth/wrong-password": "That email and password don't match an account.",
+      "auth/email-already-in-use":
+        "An account with that email already exists. Log in instead.",
+      "auth/weak-password": "Choose a password with at least 8 characters.",
+      "auth/popup-blocked":
+        "The browser blocked the Google window. Allow popups and try again.",
+      "auth/popup-closed-by-user": "The Google window closed before finishing.",
+      "auth/cancelled-popup-request":
+        "The Google window closed before finishing.",
+      "auth/network-request-failed":
+        "Connection problem. Check your internet and try again.",
+      "auth/too-many-requests":
+        "Too many attempts. Wait a moment and try again.",
+      "app/username-already-in-use":
+        "That username is already taken. Choose another one.",
+    };
+
+    const fail = (panel: "login" | "signup", error: unknown) => {
+      const code =
+        typeof error === "object" && error !== null && "code" in error
+          ? String(error.code)
+          : "";
+      setError(panel, messages[code] ?? "Something went wrong. Try again.");
+    };
+
+    const ensureUserProfile = async (user: User) => {
+      const profileRef = doc(db, "users", user.uid);
+      const profileSnapshot = await getDoc(profileRef);
+      if (profileSnapshot.exists()) return;
+
+      const name =
+        user.displayName || user.email?.split("@")[0] || "Paddlme member";
+      await setDoc(profileRef, {
+        uid: user.uid,
+        email: user.email || "",
+        username: "",
+        name,
+        profileImageUrl: user.photoURL || null,
+        bio: null,
+        location: null,
+        createdAt: new Date().toISOString(),
+        isEmailVerified: user.emailVerified,
+        rating: 0,
+        reviewCount: 0,
+        favoriteEquipmentIds: [],
+      });
+    };
+
+    const setBusy = (
+      button: HTMLButtonElement,
+      busy: boolean,
+      busyLabel: string,
+    ) => {
+      if (busy) {
+        button.dataset.label = button.textContent ?? "";
+        button.textContent = busyLabel;
+      } else {
+        button.textContent = button.dataset.label ?? busyLabel;
+      }
+      button.disabled = busy;
+    };
+
+    const loginForm = document.getElementById(
+      "auth-login-form",
+    ) as HTMLFormElement | null;
+    loginForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setError("login", "");
+      if (!loginForm.checkValidity()) {
+        loginForm.reportValidity();
+        return;
+      }
+      const submit = loginForm.querySelector<HTMLButtonElement>(
+        'button[type="submit"]',
+      );
+      const fields = loginForm.elements as HTMLFormControlsCollection;
+      const emailOrUsername = (
+        fields.namedItem("email") as HTMLInputElement
+      ).value.trim();
+      const password = (fields.namedItem("password") as HTMLInputElement).value;
+      try {
+        if (submit) setBusy(submit, true, "Logging in…");
+        let email = emailOrUsername;
+        if (!email.includes("@")) {
+          const users = await getDocs(
+            query(
+              collection(db, "users"),
+              where("username", "==", emailOrUsername.toLowerCase()),
+              limit(1),
+            ),
+          );
+          email = String(users.docs[0]?.data().email || "");
+          if (!email) {
+            setError("login", "No account found with that email or username.");
+            if (submit) setBusy(submit, false, "Log in");
+            return;
+          }
+        }
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.reload();
+      } catch (error) {
+        fail("login", error);
+        if (submit) setBusy(submit, false, "Log in");
+      }
+    });
+
+    const signupForm = document.getElementById(
+      "auth-signup-form",
+    ) as HTMLFormElement | null;
+    signupForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setError("signup", "");
+      if (!signupForm.checkValidity()) {
+        signupForm.reportValidity();
+        return;
+      }
+      const submit = signupForm.querySelector<HTMLButtonElement>(
+        'button[type="submit"]',
+      );
+      const fields = signupForm.elements as HTMLFormControlsCollection;
+      const firstName = (
+        fields.namedItem("firstName") as HTMLInputElement
+      ).value.trim();
+      const lastName = (
+        fields.namedItem("lastName") as HTMLInputElement
+      ).value.trim();
+      const username = (
+        fields.namedItem("username") as HTMLInputElement
+      ).value.trim().toLowerCase();
+      const email = (
+        fields.namedItem("email") as HTMLInputElement
+      ).value.trim();
+      const password = (fields.namedItem("password") as HTMLInputElement).value;
+      try {
+        if (submit) setBusy(submit, true, "Creating account…");
+        const usernames = await getDocs(
+          query(
+            collection(db, "users"),
+            where("username", "==", username),
+            limit(1),
+          ),
+        );
+        if (!usernames.empty) {
+          const error = new Error("Username already in use.");
+          Object.assign(error, { code: "app/username-already-in-use" });
+          throw error;
+        }
+
+        const credential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password,
+        );
+        const displayName = [firstName, lastName].filter(Boolean).join(" ");
+        if (displayName) {
+          await updateProfile(credential.user, { displayName });
+        }
+        await setDoc(doc(db, "users", credential.user.uid), {
+          uid: credential.user.uid,
+          email,
+          username,
+          name: displayName,
+          profileImageUrl: null,
+          bio: null,
+          location: null,
+          createdAt: new Date().toISOString(),
+          isEmailVerified: credential.user.emailVerified,
+          rating: 0,
+          reviewCount: 0,
+          favoriteEquipmentIds: [],
+        });
+        window.location.reload();
+      } catch (error) {
+        fail("signup", error);
+        if (submit) setBusy(submit, false, "Agree & create account");
+      }
+    });
+
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-auth-google]")
+      .forEach((button) => {
+        button.addEventListener("click", async () => {
+          try {
+            setBusy(button, true, "Opening Google…");
+            const credential = await signInWithPopup(auth, new GoogleAuthProvider());
+            await ensureUserProfile(credential.user);
+            window.location.reload();
+          } catch (error) {
+            setBusy(button, false, "Continue with Google");
+            fail(active, error);
+          }
+        });
+      });
+  }
+</script>

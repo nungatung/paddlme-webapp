@@ -1,0 +1,980 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import LocationModal from '../components/LocationModal.astro';
+import AuthModal from '../components/AuthModal.astro';
+
+const site = 'https://paddlme.tech/browse';
+const mapboxToken =
+  import.meta.env.PUBLIC_MAP_BOX_TOKEN ||
+  import.meta.env.MAP_BOX_TOKEN ||
+  import.meta.env.PUBLIC_MAPBOX_TOKEN ||
+  '';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+    <title>Browse gear — Paddlme</title>
+    <meta
+      name="description"
+      content="Browse kayaks, paddleboards and jet skis for hire across New Zealand. Every host and renter is identity verified."
+    />
+    <link rel="canonical" href={site} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Mapbox GL JS & CSS -->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script
+      is:inline
+      src="https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.js"
+    ></script>
+  </head>
+
+  <body class="bg-[#f6f8f9] font-sans text-ink antialiased">
+    <Nav variant="solid" />
+
+    <main class="mx-auto max-w-[1240px] px-6 pb-24 pt-28">
+      <!-- Page heading -->
+      <div class="mb-6">
+        <h1 class="text-[30px] font-extrabold tracking-[-0.02em] text-ocean-950">
+          Browse all gear
+        </h1>
+        <p class="mt-1 text-[15px] text-muted">
+          Find kayaks, paddleboards, jet skis and more from locals near you.
+        </p>
+      </div>
+
+      <!-- Filters bar -->
+      <form
+        id="filters"
+        class="flex flex-wrap items-center gap-3"
+        onsubmit="return false"
+      >
+        <!-- Location Picker Button (Opens Map Modal) -->
+        <button
+          type="button"
+          id="location-picker-btn"
+          class="flex h-11 items-center gap-2 rounded-xl border border-line bg-white px-4 text-[14px] font-medium text-ink transition-colors hover:border-ocean-500 cursor-pointer shadow-sm"
+          aria-haspopup="dialog"
+        >
+          <svg
+            class="h-4 w-4 text-accent shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"></path>
+            <circle cx="12" cy="10" r="2.5"></circle>
+          </svg>
+          <span id="location-picker-label">All locations</span>
+          <svg
+            class="h-3.5 w-3.5 text-muted shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+
+        <!-- Custom Categories Dropdown Popover -->
+        <div class="relative" id="category-dropdown-wrapper">
+          <button
+            type="button"
+            id="category-picker-btn"
+            class="flex h-11 items-center gap-2 rounded-xl border border-line bg-white px-4 text-[14px] font-medium text-ink transition-colors hover:border-ocean-500 cursor-pointer shadow-sm"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span id="category-picker-label">All categories</span>
+            <svg
+              class="h-3.5 w-3.5 text-muted shrink-0 transition-transform duration-200"
+              id="category-picker-chevron"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+
+          <!-- Dropdown Menu Card -->
+          <div
+            id="category-menu"
+            class="absolute left-0 top-[calc(100%+8px)] z-40 hidden w-[280px] overflow-hidden rounded-2xl border border-line bg-white shadow-[0_16px_40px_rgba(0,37,58,0.16)]"
+            role="listbox"
+          >
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-line/80 px-5 py-3.5">
+              <span class="text-[16px] font-extrabold tracking-[-0.01em] text-ocean-950">
+                All Categories
+              </span>
+              <button
+                type="button"
+                id="category-menu-close"
+                class="grid h-7 w-7 place-items-center rounded-full text-muted transition-colors hover:bg-[#f6f8f9] hover:text-ink cursor-pointer"
+                aria-label="Close categories"
+              >
+                <svg
+                  class="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                >
+                  <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Categories Options List with counts -->
+            <div
+              id="category-options-list"
+              class="max-h-[320px] overflow-y-auto p-2"
+            >
+              <button
+                type="button"
+                class="category-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-[14px] font-semibold text-ocean-950 transition-colors hover:bg-[#f6f8f9] cursor-pointer bg-ocean-50/70 font-bold"
+                data-category=""
+              >
+                <span>All Categories</span>
+                <span class="text-[13px] text-muted" id="category-total-count"></span>
+              </button>
+              <button
+                type="button"
+                class="category-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-[14px] font-medium text-ink transition-colors hover:bg-[#f6f8f9] cursor-pointer"
+                data-category="Jet Skis"
+              >
+                <span>Jet Skis</span>
+                <span class="text-[13px] text-muted"></span>
+              </button>
+              <button
+                type="button"
+                class="category-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-[14px] font-medium text-ink transition-colors hover:bg-[#f6f8f9] cursor-pointer"
+                data-category="Kayaks"
+              >
+                <span>Kayaks</span>
+                <span class="text-[13px] text-muted"></span>
+              </button>
+              <button
+                type="button"
+                class="category-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-[14px] font-medium text-ink transition-colors hover:bg-[#f6f8f9] cursor-pointer"
+                data-category="Paddleboards"
+              >
+                <span>Paddleboards</span>
+                <span class="text-[13px] text-muted"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <label class="relative flex-1 min-w-[200px]">
+          <span class="sr-only">Search gear</span>
+          <svg
+            class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.5-3.5"></path>
+          </svg>
+          <input
+            id="search"
+            type="search"
+            placeholder="Search by title, gear or keyword…"
+            autocomplete="off"
+            class="h-11 w-full rounded-xl border border-line bg-white pl-10 pr-4 text-[14px] outline-none placeholder:text-muted/60 focus:border-ocean-500 shadow-sm"
+          />
+        </label>
+
+        <button
+          id="clear"
+          type="button"
+          class="hidden h-11 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-muted transition-colors hover:text-ink cursor-pointer"
+        >
+          Clear filters
+        </button>
+      </form>
+
+      <!-- Count -->
+      <p class="mt-4 text-sm text-muted" id="count"></p>
+
+      <!-- Skeleton grid (shown while loading) -->
+      <div
+        id="skeleton"
+        class="mt-4 grid grid-cols-[repeat(auto-fill,minmax(268px,1fr))] gap-5"
+      >
+        {Array.from({ length: 8 }).map(() => (
+          <div class="animate-pulse overflow-hidden rounded-2xl border border-line bg-white">
+            <div class="aspect-[4/3] w-full bg-gray-200"></div>
+            <div class="px-4 pb-4 pt-3.5">
+              <div class="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
+              <div class="mb-2 h-3 w-1/2 rounded bg-gray-200"></div>
+              <div class="h-4 w-1/3 rounded bg-gray-200"></div>
+              <div class="mt-3 flex items-center gap-2">
+                <div class="h-8 w-8 rounded-full bg-gray-200"></div>
+                <div class="h-3 w-16 rounded bg-gray-200"></div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Real grid (populated by JS) -->
+      <div
+        id="grid"
+        class="mt-4 grid grid-cols-[repeat(auto-fill,minmax(268px,1fr))] gap-5"
+      >
+      </div>
+
+      <!-- Empty state -->
+      <p id="empty" class="mt-8 hidden text-center text-[15px] text-muted">
+        Nothing matches those filters. Try clearing the search or picking a
+        different location.
+      </p>
+    </main>
+
+    <Footer />
+
+    <!-- Location Picker Modal -->
+    <LocationModal mapboxToken={mapboxToken} />
+    <AuthModal />
+  </body>
+</html>
+
+<style is:global>
+  main { min-height: 60vh; }
+
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-ocean-500) 12%, #fff);
+    color: var(--color-ocean-500);
+    font-weight: 700;
+    font-size: 13px;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  import {
+    collection,
+    getDocs,
+    limit,
+    orderBy,
+    query,
+    where,
+  } from 'firebase/firestore';
+  import { db } from '../lib/firebase';
+
+  type Listing = {
+    id: string;
+    title: string;
+    location: string;
+    latitude?: number | null;
+    longitude?: number | null;
+    pricePerHour: number;
+    category: string;
+    image: string | null;
+    ownerName: string;
+    ownerImage: string | null;
+    rating: number;
+  };
+
+  declare const mapboxgl: any;
+
+  // DOM elements
+  const grid = document.getElementById('grid')!;
+  const skeleton = document.getElementById('skeleton')!;
+  const count = document.getElementById('count')!;
+  const empty = document.getElementById('empty')!;
+  const search = document.getElementById('search') as HTMLInputElement;
+  const clearButton = document.getElementById('clear') as HTMLButtonElement;
+
+  // Category Picker Elements
+  const categoryWrapper = document.getElementById('category-dropdown-wrapper')!;
+  const categoryPickerBtn = document.getElementById('category-picker-btn') as HTMLButtonElement;
+  const categoryPickerLabel = document.getElementById('category-picker-label')!;
+  const categoryPickerChevron = document.getElementById('category-picker-chevron')!;
+  const categoryMenu = document.getElementById('category-menu')!;
+  const categoryMenuClose = document.getElementById('category-menu-close')!;
+  const categoryOptionsList = document.getElementById('category-options-list')!;
+  const categoryTotalCount = document.getElementById('category-total-count');
+
+  // Location Modal Elements
+  const locationPickerBtn = document.getElementById('location-picker-btn') as HTMLButtonElement;
+  const locationPickerLabel = document.getElementById('location-picker-label')!;
+  const modalOverlay = document.getElementById('location-modal-overlay')!;
+  const modalClose = document.getElementById('location-modal-close')!;
+  const modalSearch = document.getElementById('location-modal-search') as HTMLInputElement;
+  const searchClear = document.getElementById('location-search-clear') as HTMLButtonElement;
+  const suggestionsBox = document.getElementById('location-suggestions')!;
+  const selectedAddress = document.getElementById('location-selected-address')!;
+  const selectedSub = document.getElementById('location-selected-sub')!;
+  const confirmBtn = document.getElementById('location-confirm-btn') as HTMLButtonElement;
+  const recenterBtn = document.getElementById('location-recenter-btn') as HTMLButtonElement;
+
+  let listings: Listing[] = [];
+  let selectedLocation: string = '';
+  let selectedCategory: string = '';
+  let map: any = null;
+  let marker: any = null;
+
+  // Default coordinate: Wellington Central (center of NZ)
+  const DEFAULT_LAT = -41.2865;
+  const DEFAULT_LNG = 174.7762;
+  let currentLat = DEFAULT_LAT;
+  let currentLng = DEFAULT_LNG;
+  let currentPlaceName = 'Wellington Central';
+  let currentPlaceSub = 'Wellington, New Zealand';
+
+  // Read Mapbox token from data attribute or env
+  const mapboxToken =
+    modalOverlay?.getAttribute('data-mapbox-token') ||
+    (import.meta.env.PUBLIC_MAP_BOX_TOKEN as string | undefined)?.trim() ||
+    (import.meta.env.MAP_BOX_TOKEN as string | undefined)?.trim() ||
+    '';
+
+  const escapeHtml = (value: string) =>
+    value.replace(
+      /[&<>"']/g,
+      (char) =>
+        ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+        })[char] as string,
+    );
+
+  const price = (value: number) =>
+    Number.isFinite(value) && value > 0
+      ? `NZ$${value.toFixed(0)}`
+      : 'Price on request';
+
+  function avatar(listing: Listing): string {
+    if (listing.ownerImage) {
+      return `<img src="${escapeHtml(listing.ownerImage)}" alt="" class="h-full w-full object-cover" />`;
+    }
+    const initial = (listing.ownerName || '?').trim().charAt(0).toUpperCase();
+    return `<span>${escapeHtml(initial)}</span>`;
+  }
+
+  function card(listing: Listing): string {
+    const image = listing.image
+      ? `<img src="${escapeHtml(listing.image)}" alt="${escapeHtml(
+          listing.title,
+        )}" loading="lazy" class="aspect-[4/3] w-full object-cover" />`
+      : `<div class="aspect-[4/3] w-full bg-[#e9ecef] grid place-items-center text-muted">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-10 w-10 opacity-40"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+         </div>`;
+
+    const rating =
+      listing.rating > 0
+        ? `<span class="ml-auto flex items-center gap-0.5 text-[12px] text-muted">
+             <svg viewBox="0 0 24 24" fill="currentColor" class="h-3 w-3 text-accent" aria-hidden="true">
+               <path d="M12 4l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 16.4 7.2 18.9l.9-5.4L4.2 9.7l5.4-.8z"></path>
+             </svg>${listing.rating.toFixed(1)}
+           </span>`
+        : '';
+
+    return `
+      <article class="overflow-hidden rounded-2xl border border-line bg-white transition-shadow hover:shadow-[0_8px_24px_rgba(0,37,58,0.10)]">
+        <a href="/listing/${listing.id}" class="block no-underline text-ink">
+          ${image}
+          <div class="px-4 pb-4 pt-3">
+            <h2 class="mb-1 text-[15px] font-bold leading-snug line-clamp-1">${escapeHtml(
+              listing.title,
+            )}</h2>
+            <p class="flex items-center gap-1 text-[13px] text-muted">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+                <path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"></path>
+                <circle cx="12" cy="10" r="2.5"></circle>
+              </svg>
+              ${escapeHtml(listing.location)}
+            </p>
+            <p class="mt-2 text-[15px] font-bold">${price(
+              listing.pricePerHour,
+            )}<span class="text-[13px] font-medium text-muted"> / hour</span></p>
+            <div class="mt-3 flex items-center gap-2">
+              <span class="avatar">${avatar(listing)}</span>
+              <span class="text-[12px] font-semibold text-muted">${escapeHtml(
+                listing.ownerName || 'Host',
+              )}</span>
+              ${rating}
+            </div>
+          </div>
+        </a>
+      </article>`;
+  }
+
+  const TARGET_CATEGORIES = ['Jet Skis', 'Kayaks', 'Paddleboards'] as const;
+
+  function matchesCategory(listing: Listing, targetCat: string): boolean {
+    if (!targetCat) return true;
+    const c = (listing.category || '').toLowerCase();
+    const t = (listing.title || '').toLowerCase();
+
+    if (targetCat === 'Jet Skis') {
+      return (
+        c.includes('jet') ||
+        c.includes('ski') ||
+        t.includes('jet ski') ||
+        t.includes('jetski')
+      );
+    }
+    if (targetCat === 'Kayaks') {
+      return c.includes('kayak') || t.includes('kayak');
+    }
+    if (targetCat === 'Paddleboards') {
+      return (
+        c.includes('paddle') ||
+        c.includes('sup') ||
+        t.includes('paddleboard') ||
+        t.includes('paddle board') ||
+        t.includes('sup')
+      );
+    }
+    return c === targetCat.toLowerCase();
+  }
+
+  function render() {
+    const term = search.value.trim().toLowerCase();
+    const loc = selectedLocation.trim().toLowerCase();
+    const cat = selectedCategory;
+    const hasFilters = Boolean(term || loc || cat);
+
+    clearButton.classList.toggle('hidden', !hasFilters);
+
+    const visible = listings.filter((listing) => {
+      if (
+        term &&
+        !`${listing.title} ${listing.location} ${listing.category}`
+          .toLowerCase()
+          .includes(term)
+      ) {
+        return false;
+      }
+      if (loc) {
+        const itemLoc = listing.location.toLowerCase();
+        if (!itemLoc.includes(loc) && !loc.includes(itemLoc)) {
+          const locParts = loc.split(/[\s,]+/).filter((p) => p.length > 2);
+          const hasMatch = locParts.some((part) => itemLoc.includes(part));
+          if (!hasMatch) return false;
+        }
+      }
+      if (cat && !matchesCategory(listing, cat)) return false;
+      return true;
+    });
+
+    count.textContent = `Showing ${visible.length} of ${listings.length} listings`;
+    empty.classList.toggle('hidden', visible.length > 0);
+    grid.innerHTML = visible.map(card).join('');
+  }
+
+  // -------------------------------------------------------------
+  // Custom Category Dropdown Logic
+  // -------------------------------------------------------------
+  function toggleCategoryMenu(show?: boolean) {
+    const isHidden = categoryMenu.classList.contains('hidden');
+    const shouldOpen = show !== undefined ? show : isHidden;
+
+    if (shouldOpen) {
+      categoryMenu.classList.remove('hidden');
+      categoryPickerChevron.classList.add('rotate-180');
+      categoryPickerBtn.setAttribute('aria-expanded', 'true');
+    } else {
+      categoryMenu.classList.add('hidden');
+      categoryPickerChevron.classList.remove('rotate-180');
+      categoryPickerBtn.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  categoryPickerBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleCategoryMenu();
+  });
+
+  categoryMenuClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleCategoryMenu(false);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!categoryWrapper.contains(e.target as Node)) {
+      toggleCategoryMenu(false);
+    }
+  });
+
+  function selectCategory(cat: string) {
+    selectedCategory = cat;
+    categoryPickerLabel.textContent = cat || 'All categories';
+
+    if (cat) {
+      categoryPickerBtn.classList.add('border-ocean-500', 'bg-ocean-50/20');
+    } else {
+      categoryPickerBtn.classList.remove('border-ocean-500', 'bg-ocean-50/20');
+    }
+
+    // Update active highlight on category items
+    categoryOptionsList.querySelectorAll<HTMLButtonElement>('.category-option').forEach((btn) => {
+      const itemCat = btn.getAttribute('data-category') || '';
+      const isSelected = itemCat.toLowerCase() === cat.toLowerCase();
+      btn.classList.toggle('bg-ocean-50/70', isSelected);
+      btn.classList.toggle('font-bold', isSelected);
+    });
+
+    toggleCategoryMenu(false);
+    render();
+  }
+
+  function populateCategories() {
+    if (categoryTotalCount) {
+      categoryTotalCount.textContent = `(${listings.length})`;
+    }
+
+    const counts: Record<string, number> = {
+      'Jet Skis': 0,
+      'Kayaks': 0,
+      'Paddleboards': 0,
+    };
+
+    listings.forEach((listing) => {
+      TARGET_CATEGORIES.forEach((cat) => {
+        if (matchesCategory(listing, cat)) {
+          counts[cat]++;
+        }
+      });
+    });
+
+    categoryOptionsList.innerHTML = `
+      <button
+        type="button"
+        class="category-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-[14px] font-semibold text-ocean-950 transition-colors hover:bg-[#f6f8f9] cursor-pointer ${
+          !selectedCategory ? 'bg-ocean-50/70 font-bold' : ''
+        }"
+        data-category=""
+      >
+        <span>All Categories</span>
+        <span class="text-[13px] text-muted">(${listings.length})</span>
+      </button>
+      ${TARGET_CATEGORIES.map(
+        (cat) => `
+        <button
+          type="button"
+          class="category-option flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-[14px] font-medium text-ink transition-colors hover:bg-[#f6f8f9] cursor-pointer ${
+            selectedCategory === cat ? 'bg-ocean-50/70 font-bold' : ''
+          }"
+          data-category="${escapeHtml(cat)}"
+        >
+          <span>${escapeHtml(cat)}</span>
+          <span class="text-[13px] text-muted">(${counts[cat] || 0})</span>
+        </button>`,
+      ).join('')}
+    `;
+
+    categoryOptionsList
+      .querySelectorAll<HTMLButtonElement>('.category-option')
+      .forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const cat = btn.getAttribute('data-category') || '';
+          selectCategory(cat);
+        });
+      });
+  }
+
+  // -------------------------------------------------------------
+  // Mapbox GL JS Integration
+  // -------------------------------------------------------------
+  function initMap() {
+    if (map || typeof mapboxgl === 'undefined') return;
+
+    if (mapboxToken) {
+      mapboxgl.accessToken = mapboxToken;
+    }
+
+    map = new mapboxgl.Map({
+      container: 'location-map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [currentLng, currentLat], // [lng, lat]
+      zoom: 12,
+      attributionControl: false,
+    });
+
+    map.addControl(
+      new mapboxgl.AttributionControl({ compact: true }),
+      'bottom-right',
+    );
+
+    // Draggable red pin
+    marker = new mapboxgl.Marker({
+      color: '#D32F2F',
+      draggable: true,
+    })
+      .setLngLat([currentLng, currentLat])
+      .addTo(map);
+
+    marker.on('dragend', () => {
+      const lngLat = marker.getLngLat();
+      updateSelectedCoords(lngLat.lat, lngLat.lng);
+    });
+
+    map.on('click', (e: any) => {
+      marker.setLngLat(e.lngLat);
+      updateSelectedCoords(e.lngLat.lat, e.lngLat.lng);
+    });
+  }
+
+  async function updateSelectedCoords(lat: number, lng: number) {
+    currentLat = lat;
+    currentLng = lng;
+
+    try {
+      selectedAddress.textContent = 'Locating…';
+      selectedSub.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+      if (mapboxToken) {
+        const res = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxToken}&country=nz&types=neighborhood,locality,place,address&limit=1`,
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data.features?.length > 0) {
+            const feat = data.features[0];
+            currentPlaceName = feat.text || feat.place_name;
+            currentPlaceSub = feat.place_name || 'New Zealand';
+            selectedAddress.textContent = currentPlaceName;
+            selectedSub.textContent = currentPlaceSub;
+            return;
+          }
+        }
+      }
+
+      // Fallback geocoder if token request fails
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const addr = data.address || {};
+        const title =
+          addr.suburb ||
+          addr.neighbourhood ||
+          addr.town ||
+          addr.city ||
+          addr.village ||
+          data.name ||
+          'Selected area';
+        const sub = [addr.city, addr.region, 'New Zealand']
+          .filter(Boolean)
+          .join(', ');
+        currentPlaceName = title;
+        currentPlaceSub = data.display_name || sub;
+        selectedAddress.textContent = currentPlaceName;
+        selectedSub.textContent = currentPlaceSub;
+      }
+    } catch {
+      selectedAddress.textContent = 'Selected Location';
+      selectedSub.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    }
+  }
+
+  function setMapLocation(lat: number, lng: number, name: string, fullAddress?: string) {
+    currentLat = lat;
+    currentLng = lng;
+    currentPlaceName = name;
+    currentPlaceSub = fullAddress || `${name}, New Zealand`;
+
+    selectedAddress.textContent = currentPlaceName;
+    selectedSub.textContent = currentPlaceSub;
+
+    if (map && marker) {
+      marker.setLngLat([lng, lat]);
+      map.flyTo({ center: [lng, lat], zoom: 13, essential: true });
+    }
+  }
+
+  // Autocomplete location search
+  let debounceTimer: any = null;
+  modalSearch.addEventListener('input', () => {
+    const q = modalSearch.value.trim();
+    searchClear.classList.toggle('hidden', !q);
+    clearTimeout(debounceTimer);
+
+    if (q.length < 2) {
+      suggestionsBox.innerHTML = '';
+      suggestionsBox.classList.add('hidden');
+      return;
+    }
+
+    debounceTimer = setTimeout(() => searchLocations(q), 300);
+  });
+
+  searchClear.addEventListener('click', () => {
+    modalSearch.value = '';
+    searchClear.classList.add('hidden');
+    suggestionsBox.innerHTML = '';
+    suggestionsBox.classList.add('hidden');
+  });
+
+  async function searchLocations(queryStr: string) {
+    suggestionsBox.innerHTML = '<div class="px-3.5 py-2 text-[13px] text-muted">Searching…</div>';
+    suggestionsBox.classList.remove('hidden');
+
+    try {
+      let results: Array<{ name: string; full: string; lat: number; lng: number }> = [];
+
+      if (mapboxToken) {
+        const res = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(queryStr)}.json?access_token=${mapboxToken}&country=nz&types=place,locality,neighborhood,district,region,address&limit=5`,
+        );
+        if (res.ok) {
+          const data = await res.json();
+          results = (data.features || []).map((f: any) => ({
+            name: f.text || f.place_name,
+            full: f.place_name,
+            lng: f.center[0],
+            lat: f.center[1],
+          }));
+        }
+      }
+
+      if (results.length === 0) {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&countrycodes=nz&q=${encodeURIComponent(queryStr)}&limit=5&addressdetails=1`,
+        );
+        if (res.ok) {
+          const data = await res.json();
+          results = data.map((item: any) => ({
+            name: item.name || item.display_name.split(',')[0],
+            full: item.display_name,
+            lat: parseFloat(item.lat),
+            lng: parseFloat(item.lon),
+          }));
+        }
+      }
+
+      if (results.length === 0) {
+        suggestionsBox.innerHTML =
+          '<div class="px-3.5 py-2 text-[13px] text-muted">No New Zealand locations found</div>';
+        return;
+      }
+
+      suggestionsBox.innerHTML = results
+        .map(
+          (item) => `
+          <button
+            type="button"
+            class="suggestion-item flex w-full items-start gap-2.5 px-3.5 py-2 text-left hover:bg-[#f6f8f9] transition-colors cursor-pointer"
+            data-lat="${item.lat}"
+            data-lng="${item.lng}"
+            data-name="${escapeHtml(item.name)}"
+            data-full="${escapeHtml(item.full)}"
+          >
+            <svg class="h-4 w-4 shrink-0 text-muted mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+            <div class="min-w-0 flex-1">
+              <p class="text-[13px] font-bold text-ink truncate">${escapeHtml(item.name)}</p>
+              <p class="text-[11px] text-muted truncate">${escapeHtml(item.full)}</p>
+            </div>
+          </button>`,
+        )
+        .join('');
+
+      suggestionsBox.querySelectorAll('.suggestion-item').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const lat = parseFloat(btn.getAttribute('data-lat')!);
+          const lng = parseFloat(btn.getAttribute('data-lng')!);
+          const name = btn.getAttribute('data-name')!;
+          const full = btn.getAttribute('data-full')!;
+          setMapLocation(lat, lng, name, full);
+          suggestionsBox.classList.add('hidden');
+          modalSearch.value = name;
+          searchClear.classList.remove('hidden');
+        });
+      });
+    } catch {
+      suggestionsBox.innerHTML =
+        '<div class="px-3.5 py-2 text-[13px] text-muted">Location search unavailable</div>';
+    }
+  }
+
+  // Recenter button
+  recenterBtn.addEventListener('click', () => {
+    getUserLocation();
+  });
+
+  function getUserLocation() {
+    if (navigator.geolocation) {
+      selectedAddress.textContent = 'Locating your current position…';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          setMapLocation(lat, lng, 'Current Location');
+          updateSelectedCoords(lat, lng);
+        },
+        () => {
+          setMapLocation(DEFAULT_LAT, DEFAULT_LNG, 'Wellington Central', 'Wellington, New Zealand');
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 },
+      );
+    } else {
+      setMapLocation(DEFAULT_LAT, DEFAULT_LNG, 'Wellington Central', 'Wellington, New Zealand');
+    }
+  }
+
+  // Open location modal
+  function openLocationModal() {
+    modalOverlay.classList.remove('hidden');
+    void modalOverlay.offsetWidth;
+    modalOverlay.classList.add('is-open');
+
+    initMap();
+
+    // Automatically detect and focus user's current location on open
+    getUserLocation();
+
+    setTimeout(() => {
+      if (map) {
+        map.resize();
+      }
+    }, 150);
+  }
+
+  function closeLocationModal() {
+    modalOverlay.classList.remove('is-open');
+    setTimeout(() => {
+      modalOverlay.classList.add('hidden');
+    }, 220);
+  }
+
+  locationPickerBtn.addEventListener('click', openLocationModal);
+  modalClose.addEventListener('click', closeLocationModal);
+
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay || (e.target as HTMLElement).classList.contains('auth-overlay')) {
+      closeLocationModal();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (!modalOverlay.classList.contains('hidden')) {
+        closeLocationModal();
+      }
+      toggleCategoryMenu(false);
+    }
+  });
+
+  // Confirm selection
+  confirmBtn.addEventListener('click', () => {
+    selectedLocation = currentPlaceName;
+    locationPickerLabel.textContent = selectedLocation;
+    locationPickerBtn.classList.add('border-ocean-500', 'bg-ocean-50/20');
+    closeLocationModal();
+    render();
+  });
+
+  // -------------------------------------------------------------
+  // Data Loading from Firestore
+  // -------------------------------------------------------------
+  async function load() {
+    try {
+      const snapshot = await getDocs(
+        query(
+          collection(db, 'equipment'),
+          where('isAvailable', '==', true),
+          orderBy('createdAt', 'desc'),
+          limit(200),
+        ),
+      );
+
+      listings = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        const images = Array.isArray(data.imageUrls) ? data.imageUrls : [];
+        const ownerImg = typeof data.ownerImageUrl === 'string' ? data.ownerImageUrl : null;
+
+        return {
+          id: doc.id,
+          title: data.title ?? 'Untitled gear',
+          location: data.location ?? '',
+          latitude: typeof data.latitude === 'number' ? data.latitude : null,
+          longitude: typeof data.longitude === 'number' ? data.longitude : null,
+          pricePerHour: Number(data.pricePerHour ?? 0),
+          category: String(data.category ?? ''),
+          image: images.length > 0 ? String(images[0]) : null,
+          ownerName: String(data.ownerName ?? ''),
+          ownerImage: ownerImg,
+          rating: Number(data.rating ?? 0),
+        };
+      });
+
+      // Populate custom category dropdown with actual listing counts
+      populateCategories();
+
+      // Hide skeleton, show real grid
+      skeleton.classList.add('hidden');
+      render();
+    } catch (error) {
+      console.error('Failed to load listings', error);
+      skeleton.classList.add('hidden');
+      count.textContent = 'Listings are unavailable right now — please try again later.';
+    }
+  }
+
+  // Wire up search filter
+  search.addEventListener('input', render);
+
+  clearButton.addEventListener('click', () => {
+    search.value = '';
+    selectedLocation = '';
+    selectedCategory = '';
+    locationPickerLabel.textContent = 'All locations';
+    locationPickerBtn.classList.remove('border-ocean-500', 'bg-ocean-50/20');
+    categoryPickerLabel.textContent = 'All categories';
+    categoryPickerBtn.classList.remove('border-ocean-500', 'bg-ocean-50/20');
+    categoryOptionsList.querySelectorAll<HTMLButtonElement>('.category-option').forEach((btn) => {
+      const isAll = !btn.getAttribute('data-category');
+      btn.classList.toggle('bg-ocean-50/70', isAll);
+      btn.classList.toggle('font-bold', isAll);
+    });
+    render();
+    clearButton.classList.add('hidden');
+  });
+
+  // Start loading
+  load();
+</script>
