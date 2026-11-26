@@ -1,0 +1,1898 @@
+---
+import "../../styles/global.css";
+import Nav from "../../components/Nav.astro";
+import Footer from "../../components/Footer.astro";
+import AuthModal from "../../components/AuthModal.astro";
+import { db } from "../../lib/firebase";
+import { collection, getDocs } from "firebase/firestore";
+
+export async function getStaticPaths() {
+  try {
+    const snap = await getDocs(collection(db, "equipment"));
+    const paths = snap.docs.map((doc) => ({
+      params: { id: doc.id },
+      props: {
+        initialListing: {
+          id: doc.id,
+          ...doc.data(),
+        },
+      },
+    }));
+    if (paths.length > 0) return paths;
+  } catch (error) {
+    console.warn("Could not pre-fetch listings at build time:", error);
+  }
+  return [{ params: { id: "preview" }, props: { initialListing: null } }];
+}
+
+interface Props {
+  initialListing?: any;
+}
+
+const { id } = Astro.params;
+const { initialListing } = Astro.props;
+
+const site = `https://paddlme.tech/listing/${id}`;
+const mapboxToken =
+  import.meta.env.PUBLIC_MAP_BOX_TOKEN ||
+  import.meta.env.MAP_BOX_TOKEN ||
+  import.meta.env.PUBLIC_MAPBOX_TOKEN ||
+  "";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+    <title>{initialListing?.title ? `${initialListing.title} — Paddlme` : 'Equipment Rental — Paddlme'}</title>
+    <meta
+      name="description"
+      content={
+        initialListing?.description ||
+        "Rent water sports gear from verified locals in New Zealand on Paddlme."
+      }
+    />
+    <link rel="canonical" href={site} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Mapbox GL JS & CSS -->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script
+      is:inline
+      src="https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.js"
+    ></script>
+  </head>
+
+  <body
+    class="bg-white font-sans text-ink antialiased"
+    data-listing-id={id}
+    data-mapbox-token={mapboxToken}
+  >
+    <Nav variant="solid" />
+
+    <main class="mx-auto max-w-[1240px] px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
+      <!-- Back Link & Breadcrumb -->
+      <div class="mb-5 flex items-center justify-between">
+        <a
+          href="/browse"
+          class="inline-flex items-center gap-2 rounded-xl py-1.5 text-sm font-bold text-muted transition-colors hover:text-ink no-underline"
+        >
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+          Back to gear
+        </a>
+
+        <div class="hidden items-center gap-2 text-xs font-semibold text-muted sm:flex">
+          <span>Home</span>
+          <span>/</span>
+          <a href="/browse" class="hover:text-ink no-underline text-muted">
+            Browse
+          </a>
+          <span>/</span>
+          <span class="text-ink truncate max-w-[240px]" id="breadcrumb-title">
+            {initialListing?.title || "Listing"}
+          </span>
+        </div>
+      </div>
+
+      <!-- Loading Skeleton (hidden once data rendered) -->
+      <div id="listing-skeleton" class="animate-pulse space-y-6">
+        <div class="h-9 w-1/2 rounded-xl bg-gray-200"></div>
+        <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1.55fr_1fr]">
+          <div class="space-y-4">
+            <div class="aspect-[4/3] w-full rounded-2xl bg-gray-200 sm:aspect-[16/10]"></div>
+            <div class="flex gap-2">
+              <div class="h-20 w-24 rounded-xl bg-gray-200"></div>
+              <div class="h-20 w-24 rounded-xl bg-gray-200"></div>
+              <div class="h-20 w-24 rounded-xl bg-gray-200"></div>
+            </div>
+            <div class="h-32 rounded-2xl bg-gray-200"></div>
+            <div class="h-56 rounded-2xl bg-gray-200"></div>
+          </div>
+          <div class="space-y-4">
+            <div class="h-96 rounded-2xl bg-gray-200"></div>
+            <div class="h-28 rounded-2xl bg-gray-200"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Listing Content -->
+      <div id="listing-content" class="hidden space-y-6">
+        <!-- Title & Header Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div>
+            <h1
+              id="listing-title"
+              class="text-[26px] font-extrabold tracking-[-0.02em] text-ocean-950 sm:text-[32px] leading-tight"
+            >
+              {initialListing?.title || "Loading equipment…"}
+            </h1>
+            <p
+              id="listing-category-text"
+              class="mt-1 text-sm font-semibold text-muted capitalize"
+            >
+              Water sports gear
+            </p>
+          </div>
+
+          <!-- Share Button -->
+          <button
+            type="button"
+            id="share-btn"
+            title="Share this listing"
+            class="self-start grid h-10 w-10 place-items-center rounded-full border border-line bg-white text-muted hover:border-ocean-500 hover:text-ink transition-colors cursor-pointer shadow-sm"
+          >
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- 2-Column Main Layout matching reference structure -->
+        <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1.55fr_1fr] lg:items-start">
+          <!-- LEFT COLUMN: Imagery, Price bar, Description, Map, Availability, Security -->
+          <div class="space-y-7">
+            <!-- Photos Showcase -->
+            <div class="space-y-3">
+              <div class="relative overflow-hidden rounded-2xl border border-line bg-[#f8f9fa] shadow-sm">
+                <img
+                  id="listing-main-image"
+                  src={initialListing?.imageUrls?.[0] || "/jetskiing.webp"}
+                  alt=""
+                  class="aspect-[4/3] w-full object-cover sm:aspect-[16/10] transition-opacity duration-200"
+                />
+                <div
+                  id="gallery-count"
+                  class="absolute bottom-3 right-3 rounded-full bg-black/60 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm"
+                >
+                  Photo 1 of 1
+                </div>
+              </div>
+
+              <!-- Thumbnails Row -->
+              <div
+                id="listing-thumbnails"
+                class="flex gap-2.5 overflow-x-auto pb-1"
+              >
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Price Row Strip (clean, like reference) -->
+            <div class="flex items-center justify-between border-y border-line py-3.5 text-sm">
+              <span class="font-bold text-ocean-950">Rental Rate</span>
+              <span
+                id="price-row-text"
+                class="font-extrabold text-accent text-base"
+              >
+                NZ$0 / hour
+              </span>
+            </div>
+
+            <!-- Description -->
+            <div class="space-y-2.5">
+              <h2 class="text-[17px] font-extrabold text-ocean-950">
+                Description
+              </h2>
+              <p
+                id="listing-description"
+                class="whitespace-pre-line text-[15px] leading-relaxed text-ink/80"
+              >
+                No description provided.
+              </p>
+            </div>
+
+            <!-- Features / What's Included -->
+            <div id="features-container" class="space-y-2.5 hidden">
+              <h2 class="text-[17px] font-extrabold text-ocean-950">
+                What's included
+              </h2>
+              <div id="listing-features-grid" class="flex flex-wrap gap-2">
+                <!-- Injected features -->
+              </div>
+            </div>
+
+            <!-- Location with Mapbox Map (matches reference screenshot) -->
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <h2 class="text-[17px] font-extrabold text-ocean-950">
+                  Location
+                </h2>
+                <span
+                  id="location-name-badge"
+                  class="text-xs font-semibold text-muted"
+                >
+                  New Zealand
+                </span>
+              </div>
+              <p class="text-xs text-muted">
+                General area shown for host privacy. Exact pickup location is
+                provided once your booking is accepted.
+              </p>
+
+              <!-- Map Container -->
+              <div class="relative h-[290px] w-full overflow-hidden rounded-2xl border border-line bg-[#f0f3f5] shadow-sm">
+                <div id="listing-map" class="h-full w-full"></div>
+
+                <!-- Recenter button -->
+                <button
+                  type="button"
+                  id="map-recenter-btn"
+                  title="Recenter"
+                  class="absolute right-3 top-3 z-[10] grid h-8 w-8 place-items-center rounded-lg border border-line/60 bg-white shadow-sm hover:bg-[#f6f8f9] cursor-pointer"
+                >
+                  <svg
+                    class="h-4 w-4 text-ink"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Availability Schedule (matching reference) -->
+            <div class="space-y-2.5">
+              <h2 class="text-[17px] font-extrabold text-ocean-950">
+                Standard Availability
+              </h2>
+              <div class="rounded-xl border border-line/70 bg-[#fafafa] p-4 divide-y divide-line/60 text-xs">
+                <div class="flex justify-between py-2 font-medium">
+                  <span class="text-ink">Monday – Friday</span>
+                  <span class="text-muted font-semibold">
+                    08:00 AM – 06:00 PM
+                  </span>
+                </div>
+                <div class="flex justify-between py-2 font-medium">
+                  <span class="text-ink">Saturday – Sunday</span>
+                  <span class="text-muted font-semibold">
+                    07:00 AM – 07:00 PM
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Verification & Security Section (matching reference) -->
+            <div class="space-y-2.5">
+              <h2 class="text-[17px] font-extrabold text-ocean-950">
+                Verification & Security
+              </h2>
+              <p class="text-xs text-muted">
+                To hire this gear, the following checks apply:
+              </p>
+
+              <div class="rounded-xl border border-line/70 bg-[#fafafa] p-4 space-y-3 text-xs leading-relaxed">
+                <div class="flex items-start gap-2.5">
+                  <svg
+                    class="h-4 w-4 text-emerald-600 shrink-0 mt-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg>
+                  <span>
+                    A valid New Zealand driver's licence or passport verified
+                    before first booking.
+                  </span>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <svg
+                    class="h-4 w-4 text-emerald-600 shrink-0 mt-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg>
+                  <span>
+                    Refundable security deposit is placed as a card hold (not
+                    charged). It is automatically released once the host marks
+                    the gear returned.
+                  </span>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <svg
+                    class="h-4 w-4 text-emerald-600 shrink-0 mt-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg>
+                  <span>
+                    Safety checklist run at handover: both parties verify
+                    condition and submit a unique 6-digit handover code.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: Sticky Booking Box + Host Info Card -->
+          <div class="lg:sticky lg:top-28 space-y-4">
+            <!-- Booking Card Container -->
+            <div class="rounded-2xl border border-line bg-white p-6 shadow-[0_12px_36px_rgba(0,37,58,0.08)] space-y-5">
+              <div>
+                <label class="block text-xs font-bold text-ocean-950 uppercase tracking-wider mb-1.5">
+                  Rental date
+                </label>
+                <div class="relative" id="booking-date-dropdown-wrapper">
+                  <input type="hidden" id="booking-date" />
+                  <button
+                    type="button"
+                    id="booking-date-picker-btn"
+                    class="flex h-11 w-full items-center justify-between gap-2 rounded-xl border border-line bg-white px-3.5 text-left text-sm font-semibold text-ink shadow-sm transition-colors hover:border-ocean-500 cursor-pointer"
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                    aria-controls="booking-date-menu"
+                  >
+                    <span class="flex min-w-0 items-center gap-2.5">
+                      <svg class="h-4 w-4 shrink-0 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                        <path d="M16 3v4M8 3v4M3 11h18"></path>
+                      </svg>
+                      <span id="booking-date-picker-label">Choose a date</span>
+                    </span>
+                    <svg id="booking-date-picker-chevron" class="h-3.5 w-3.5 shrink-0 text-muted transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                      <path d="m6 9 6 6 6-6"></path>
+                    </svg>
+                  </button>
+                  <div
+                    id="booking-date-menu"
+                    class="absolute left-0 top-[calc(100%+8px)] z-40 hidden w-full min-w-[280px] overflow-hidden rounded-2xl border border-line bg-white shadow-[0_16px_40px_rgba(0,37,58,0.16)]"
+                    role="dialog"
+                    aria-label="Choose rental date"
+                  >
+                    <div class="flex items-center justify-between border-b border-line/80 px-4 py-3.5">
+                      <button type="button" id="booking-calendar-prev" class="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-[#f6f8f9] hover:text-ink cursor-pointer" aria-label="Previous month">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+                      </button>
+                      <span id="booking-calendar-month" class="text-[15px] font-extrabold tracking-[-0.01em] text-ocean-950"></span>
+                      <button type="button" id="booking-calendar-next" class="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-[#f6f8f9] hover:text-ink cursor-pointer" aria-label="Next month">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+                      </button>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 px-3 pt-3 text-center text-[11px] font-bold uppercase tracking-wide text-muted" aria-hidden="true">
+                      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                    </div>
+                    <div id="booking-calendar-days" class="grid grid-cols-7 gap-1 p-3 pt-2"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="booking-start-time-btn" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ocean-950">
+                    Start time
+                  </label>
+                  <div class="relative" id="booking-start-time-wrapper">
+                    <button type="button" id="booking-start-time-btn" class="flex h-10 w-full items-center justify-between gap-1 rounded-xl border border-line bg-white px-3 text-xs font-semibold text-ink shadow-sm transition-colors hover:border-ocean-500 cursor-pointer" aria-haspopup="listbox" aria-expanded="false" aria-controls="booking-start-time-menu">
+                      <span id="booking-start-time-label">9:00 AM</span>
+                      <svg class="h-3.5 w-3.5 shrink-0 text-muted transition-transform duration-200" id="booking-start-time-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                    </button>
+                    <input type="hidden" id="booking-start-time" value="09:00" />
+                    <div id="booking-start-time-menu" class="absolute left-0 top-[calc(100%+8px)] z-40 hidden w-40 overflow-hidden rounded-2xl border border-line bg-white shadow-[0_16px_40px_rgba(0,37,58,0.16)]" role="listbox" aria-label="Choose start time">
+                      <div class="border-b border-line/80 px-4 py-3 text-sm font-extrabold text-ocean-950">Start time</div>
+                      <div id="booking-start-time-options" class="max-h-56 overflow-y-auto p-2"></div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label for="booking-end-time-btn" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ocean-950">
+                    End time
+                  </label>
+                  <div class="relative" id="booking-end-time-wrapper">
+                    <button type="button" id="booking-end-time-btn" class="flex h-10 w-full items-center justify-between gap-1 rounded-xl border border-line bg-white px-3 text-xs font-semibold text-ink shadow-sm transition-colors hover:border-ocean-500 cursor-pointer" aria-haspopup="listbox" aria-expanded="false" aria-controls="booking-end-time-menu">
+                      <span id="booking-end-time-label">1:00 PM</span>
+                      <svg class="h-3.5 w-3.5 shrink-0 text-muted transition-transform duration-200" id="booking-end-time-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                    </button>
+                    <input type="hidden" id="booking-end-time" value="13:00" />
+                    <div id="booking-end-time-menu" class="absolute right-0 top-[calc(100%+8px)] z-40 hidden w-40 overflow-hidden rounded-2xl border border-line bg-white shadow-[0_16px_40px_rgba(0,37,58,0.16)]" role="listbox" aria-label="Choose end time">
+                      <div class="border-b border-line/80 px-4 py-3 text-sm font-extrabold text-ocean-950">End time</div>
+                      <div id="booking-end-time-options" class="max-h-56 overflow-y-auto p-2"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Price Box with White Background & Subtext (like screenshot) -->
+              <div class="rounded-xl border border-line bg-[#f8f9fa] p-4 text-center space-y-1.5">
+                <p
+                  id="calc-headline"
+                  class="text-[20px] font-extrabold text-ocean-950"
+                >
+                  NZ$0 (4 hours)
+                </p>
+                <p id="calc-subtext" class="text-xs text-muted leading-relaxed">
+                  Price calculated per hour of rental. You will only be charged
+                  after the host accepts.
+                </p>
+              </div>
+
+              <!-- Request to Book Button (Paddlme Accent) -->
+              <button
+                type="button"
+                id="request-booking-btn"
+                class="w-full cursor-pointer rounded-full bg-accent py-3.5 text-sm font-extrabold text-white shadow-md shadow-accent/25 hover:brightness-95 active:scale-[0.99] transition-all text-center"
+              >
+                Request to book
+              </button>
+            </div>
+
+            <!-- Host Card (directly beneath booking card, matching screenshot) -->
+            <div class="flex flex-col gap-3 rounded-2xl border border-line bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-3 min-w-0">
+                <div
+                  id="host-avatar"
+                  class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ocean-500/10 font-brand text-lg font-bold text-ocean-700 overflow-hidden"
+                >
+                  <span>H</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[11px] font-semibold text-muted">Owned by</p>
+                  <p
+                    id="host-name"
+                    class="text-sm font-extrabold text-ocean-950 truncate"
+                  >
+                    Host
+                  </p>
+                  <p class="text-[11px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                    Identity Verified
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex w-full shrink-0 items-center gap-2 sm:w-auto">
+                <button
+                  type="button"
+                  id="view-host-profile-btn"
+                  class="flex-1 rounded-full border border-line bg-white px-3 py-2 text-xs font-bold text-ink transition-colors hover:border-ocean-500 hover:bg-[#f6f8f9] cursor-pointer sm:flex-none"
+                >
+                  View profile
+                </button>
+                <button
+                  type="button"
+                  id="contact-host-btn"
+                  class="flex-1 rounded-full bg-ocean-950 px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-ocean-800 cursor-pointer sm:flex-none"
+                >
+                  Message
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Not Found State -->
+      <div
+        id="listing-error"
+        class="hidden rounded-2xl border border-line bg-white p-12 text-center max-w-lg mx-auto"
+      >
+        <h2 class="text-2xl font-extrabold text-ocean-950">
+          Listing not found
+        </h2>
+        <p class="mt-2 text-muted">
+          This equipment listing may have been moved or removed by the host.
+        </p>
+        <a
+          href="/browse"
+          class="mt-6 inline-block rounded-full bg-accent px-6 py-3 text-sm font-bold text-white no-underline hover:brightness-95"
+        >
+          Browse other gear
+        </a>
+      </div>
+    </main>
+
+    <!-- Host Profile Modal -->
+    <div
+      id="host-profile-modal"
+      class="auth-overlay fixed inset-0 z-50 hidden overflow-y-auto bg-ocean-950/60 p-3 backdrop-blur-[2px] sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="host-profile-title"
+    >
+      <div class="flex min-h-full items-center justify-center">
+        <section class="auth-card flex max-h-[calc(100vh-1.5rem)] w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl sm:max-h-[min(90vh,900px)]">
+          <header class="flex shrink-0 items-center justify-between border-b border-line px-5 py-4 sm:px-7">
+            <div>
+              <h2 id="host-profile-title" class="mt-0.5 text-lg font-extrabold text-ocean-950">Host profile</h2>
+            </div>
+            <button
+              type="button"
+              id="host-profile-close"
+              class="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-[#f6f8f9] hover:text-ink cursor-pointer"
+              aria-label="Close host profile"
+            >
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </header>
+
+          <div class="min-h-0 overflow-y-auto">
+            <div class="bg-gradient-to-br from-ocean-50 via-white to-[#f5fbfc] px-5 py-7 sm:px-8">
+              <div class="flex flex-col items-center text-center sm:flex-row sm:items-start sm:gap-5 sm:text-left">
+                <div
+                  id="host-profile-avatar"
+                  class="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-full border-4 border-white bg-ocean-500/10 text-2xl font-extrabold text-ocean-700 shadow-[0_8px_24px_rgba(0,37,58,0.12)]"
+                >H</div>
+                <div class="mt-4 min-w-0 sm:mt-1">
+                  <h3 id="host-profile-name" class="text-2xl font-extrabold tracking-tight text-ocean-950">Host</h3>
+                  <p id="host-profile-location" class="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-muted">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle>
+                    </svg>
+                    <span>New Zealand</span>
+                  </p>
+                </div>
+              </div>
+
+              <p id="host-profile-bio" class="mx-auto mt-5 hidden max-w-2xl whitespace-pre-line text-sm leading-6 text-ink sm:mx-0"></p>
+
+              <div class="mt-6 grid grid-cols-3 divide-x divide-line rounded-2xl border border-line/80 bg-white/90 py-4 shadow-sm">
+                <div class="text-center">
+                  <p id="host-profile-listing-count" class="text-lg font-extrabold text-ocean-950">0</p>
+                  <p class="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-muted sm:text-[11px]">Other listings</p>
+                </div>
+                <div class="text-center">
+                  <p id="host-profile-rating" class="text-lg font-extrabold text-ocean-950">New</p>
+                  <p class="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-muted sm:text-[11px]">Rating</p>
+                </div>
+                <div class="text-center">
+                  <p id="host-profile-review-count" class="text-lg font-extrabold text-ocean-950">0</p>
+                  <p class="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-muted sm:text-[11px]">Reviews</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-8 px-5 py-6 sm:px-8 sm:py-7">
+              <div id="host-profile-loading" class="rounded-xl border border-line bg-[#f8f9fa] px-4 py-5 text-center text-sm font-medium text-muted">
+                Loading host profile…
+              </div>
+              <p id="host-profile-error" class="hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" role="alert"></p>
+
+              <section aria-labelledby="host-profile-listings-heading">
+                <div class="mb-4 flex items-end justify-between gap-4">
+                  <div>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-muted">From this host</p>
+                    <h3 id="host-profile-listings-heading" class="mt-1 text-lg font-extrabold text-ocean-950">Other listings</h3>
+                  </div>
+                </div>
+                <div id="host-profile-listings" class="grid grid-cols-1 gap-3 sm:grid-cols-2"></div>
+              </section>
+
+              <section aria-labelledby="host-profile-reviews-heading">
+                <div class="mb-4 flex items-end justify-between gap-4">
+                  <div>
+                    <h3 id="host-profile-reviews-heading" class="mt-1 text-lg font-extrabold text-ocean-950">Reviews</h3>
+                  </div>
+                  <p id="host-profile-review-summary" class="shrink-0 text-sm font-bold text-ocean-950"></p>
+                </div>
+                <div id="host-profile-reviews" class="space-y-3"></div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Message Host Modal -->
+    <div
+      id="contact-modal"
+      class="auth-overlay fixed inset-0 z-50 hidden overflow-y-auto bg-ocean-950/60 backdrop-blur-[2px]"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="auth-card relative w-full max-w-[460px] overflow-hidden rounded-2xl bg-white p-6 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-line pb-3">
+            <h3 class="text-lg font-extrabold text-ocean-950">Message Host</h3>
+            <button
+              type="button"
+              id="contact-modal-close"
+              class="grid h-8 w-8 place-items-center rounded-full text-muted hover:bg-gray-100 cursor-pointer"
+            >
+              <svg
+                class="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+              >
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="mt-4 space-y-4">
+            <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-line/60">
+              <div
+                id="contact-modal-avatar"
+                class="h-10 w-10 rounded-full bg-ocean-500/10 text-ocean-700 font-bold grid place-items-center"
+              >
+                H
+              </div>
+              <div>
+                <p id="contact-modal-host" class="text-sm font-bold text-ink">
+                  Host
+                </p>
+                <p
+                  id="contact-modal-item"
+                  class="text-xs text-muted truncate max-w-[280px]"
+                >
+                  Equipment
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="contact-message-input"
+                class="block text-xs font-bold text-ocean-950 uppercase tracking-wider mb-1.5"
+              >
+                Your message
+              </label>
+              <textarea
+                id="contact-message-input"
+                rows="4"
+                maxlength="1000"
+                placeholder="Ask about gear specs, pickup times, or availability…"
+                class="w-full rounded-xl border border-line bg-white p-3 text-sm text-ink outline-none focus:border-ocean-500 resize-none"
+              ></textarea>
+            </div>
+
+            <button
+              type="button"
+              id="contact-send-btn"
+              class="w-full rounded-full bg-ocean-950 py-3 text-sm font-bold text-white hover:bg-ocean-800 transition-colors cursor-pointer"
+            >
+              Send message
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Success Modal -->
+    <div
+      id="booking-success-modal"
+      class="auth-overlay fixed inset-0 z-50 hidden overflow-y-auto bg-ocean-950/60 backdrop-blur-[2px]"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="auth-card relative w-full max-w-[460px] overflow-hidden rounded-2xl bg-white p-7 text-center shadow-2xl">
+          <div class="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-100 text-emerald-600 mb-4">
+            <svg
+              class="h-7 w-7"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+          </div>
+
+          <h3 class="text-xl font-extrabold text-ocean-950">
+            Booking Request Sent!
+          </h3>
+          <p class="mt-2 text-sm text-muted">
+            The host has been notified and has 24 hours to confirm your request.
+          </p>
+
+          <div class="my-5 rounded-xl border border-line bg-gray-50 p-4 text-left space-y-2 text-xs">
+            <div class="flex justify-between">
+              <span class="text-muted">Booking Reference:</span>
+              <span id="success-ref" class="font-bold text-ink">
+                BK-000000
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted">Total Price:</span>
+              <span id="success-price" class="font-bold text-ink">
+                NZ$0
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted">Date & Time:</span>
+              <span id="success-datetime" class="font-bold text-ink">
+                -
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            id="success-close-btn"
+            class="w-full rounded-full bg-ocean-950 py-3.5 text-sm font-bold text-white hover:bg-ocean-800 transition-colors cursor-pointer"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <Footer />
+    <AuthModal />
+  </body>
+</html>
+
+<style is:global>
+  /* Area radius overlay for location privacy */
+  .privacy-circle {
+    border-radius: 50%;
+    background-color: rgba(23, 69, 93, 0.22);
+    border: 2px solid #17455d;
+    box-shadow: 0 0 16px rgba(23, 69, 93, 0.35);
+  }
+</style>
+
+<script>
+  import {
+    doc,
+    getDoc,
+    collection,
+    getDocs,
+    query,
+    where,
+    orderBy,
+    addDoc,
+    setDoc,
+    serverTimestamp,
+    Timestamp,
+  } from "firebase/firestore";
+  import { db, auth } from "../../lib/firebase";
+  import { onAuthStateChanged } from "firebase/auth";
+
+  declare const mapboxgl: any;
+
+  // Elements
+  const listingId =
+    document.body.dataset.listingId ||
+    window.location.pathname.split("/").filter(Boolean).pop() ||
+    "";
+  const mapboxToken = document.body.dataset.mapboxToken || "";
+  const skeleton = document.getElementById("listing-skeleton")!;
+  const content = document.getElementById("listing-content")!;
+  const errorEl = document.getElementById("listing-error")!;
+
+  // Details Elements
+  const titleEl = document.getElementById("listing-title")!;
+  const breadcrumbTitle = document.getElementById("breadcrumb-title")!;
+  const categoryText = document.getElementById("listing-category-text")!;
+  const priceRowText = document.getElementById("price-row-text")!;
+  const descEl = document.getElementById("listing-description")!;
+  const mainImage = document.getElementById(
+    "listing-main-image",
+  ) as HTMLImageElement;
+  const thumbnailsContainer = document.getElementById("listing-thumbnails")!;
+  const galleryCount = document.getElementById("gallery-count")!;
+  const locationBadge = document.getElementById("location-name-badge")!;
+  const featuresContainer = document.getElementById("features-container")!;
+  const featuresGrid = document.getElementById("listing-features-grid")!;
+  const shareBtn = document.getElementById("share-btn")!;
+
+  // Host Card Elements
+  const hostAvatar = document.getElementById("host-avatar")!;
+  const hostName = document.getElementById("host-name")!;
+  const contactBtn = document.getElementById(
+    "contact-host-btn",
+  ) as HTMLButtonElement;
+  const viewHostProfileBtn = document.getElementById(
+    "view-host-profile-btn",
+  ) as HTMLButtonElement;
+  const hostProfileModal = document.getElementById("host-profile-modal")!;
+  const hostProfileClose = document.getElementById(
+    "host-profile-close",
+  ) as HTMLButtonElement;
+  const hostProfileAvatar = document.getElementById("host-profile-avatar")!;
+  const hostProfileName = document.getElementById("host-profile-name")!;
+  const hostProfileLocation = document.getElementById("host-profile-location")!;
+  const hostProfileBio = document.getElementById("host-profile-bio")!;
+  const hostProfileListingCount = document.getElementById(
+    "host-profile-listing-count",
+  )!;
+  const hostProfileRating = document.getElementById("host-profile-rating")!;
+  const hostProfileReviewCount = document.getElementById(
+    "host-profile-review-count",
+  )!;
+  const hostProfileReviewSummary = document.getElementById(
+    "host-profile-review-summary",
+  )!;
+  const hostProfileLoading = document.getElementById("host-profile-loading")!;
+  const hostProfileError = document.getElementById("host-profile-error")!;
+  const hostProfileListings = document.getElementById(
+    "host-profile-listings",
+  )!;
+  const hostProfileReviews = document.getElementById(
+    "host-profile-reviews",
+  )!;
+
+  // Booking Card Elements
+  const bookingDateInput = document.getElementById(
+    "booking-date",
+  ) as HTMLInputElement;
+  const bookingDateWrapper = document.getElementById(
+    "booking-date-dropdown-wrapper",
+  )!;
+  const bookingDatePickerBtn = document.getElementById(
+    "booking-date-picker-btn",
+  ) as HTMLButtonElement;
+  const bookingDatePickerLabel = document.getElementById(
+    "booking-date-picker-label",
+  )!;
+  const bookingDatePickerChevron = document.getElementById(
+    "booking-date-picker-chevron",
+  )!;
+  const bookingDateMenu = document.getElementById("booking-date-menu")!;
+  const bookingCalendarMonth = document.getElementById(
+    "booking-calendar-month",
+  )!;
+  const bookingCalendarDays = document.getElementById("booking-calendar-days")!;
+  const bookingCalendarPrev = document.getElementById(
+    "booking-calendar-prev",
+  ) as HTMLButtonElement;
+  const bookingCalendarNext = document.getElementById(
+    "booking-calendar-next",
+  ) as HTMLButtonElement;
+  const startTimeSelect = document.getElementById(
+    "booking-start-time",
+  ) as HTMLInputElement;
+  const endTimeSelect = document.getElementById(
+    "booking-end-time",
+  ) as HTMLInputElement;
+  const startTimeWrapper = document.getElementById("booking-start-time-wrapper")!;
+  const startTimeBtn = document.getElementById(
+    "booking-start-time-btn",
+  ) as HTMLButtonElement;
+  const startTimeLabel = document.getElementById("booking-start-time-label")!;
+  const startTimeChevron = document.getElementById("booking-start-time-chevron")!;
+  const startTimeMenu = document.getElementById("booking-start-time-menu")!;
+  const startTimeOptions = document.getElementById("booking-start-time-options")!;
+  const endTimeWrapper = document.getElementById("booking-end-time-wrapper")!;
+  const endTimeBtn = document.getElementById(
+    "booking-end-time-btn",
+  ) as HTMLButtonElement;
+  const endTimeLabel = document.getElementById("booking-end-time-label")!;
+  const endTimeChevron = document.getElementById("booking-end-time-chevron")!;
+  const endTimeMenu = document.getElementById("booking-end-time-menu")!;
+  const endTimeOptions = document.getElementById("booking-end-time-options")!;
+  const calcHeadline = document.getElementById("calc-headline")!;
+  const calcSubtext = document.getElementById("calc-subtext")!;
+  const bookBtn = document.getElementById(
+    "request-booking-btn",
+  ) as HTMLButtonElement;
+
+  // Contact Modal Elements
+  const contactModal = document.getElementById("contact-modal")!;
+  const contactClose = document.getElementById("contact-modal-close")!;
+  const contactHostName = document.getElementById("contact-modal-host")!;
+  const contactItemName = document.getElementById("contact-modal-item")!;
+  const contactAvatar = document.getElementById("contact-modal-avatar")!;
+  const contactInput = document.getElementById(
+    "contact-message-input",
+  ) as HTMLTextAreaElement;
+  const contactSend = document.getElementById(
+    "contact-send-btn",
+  ) as HTMLButtonElement;
+
+  // Success Modal Elements
+  const successModal = document.getElementById("booking-success-modal")!;
+  const successClose = document.getElementById("success-close-btn")!;
+  const successRef = document.getElementById("success-ref")!;
+  const successPrice = document.getElementById("success-price")!;
+  const successDatetime = document.getElementById("success-datetime")!;
+
+  // Map elements
+  const recenterBtn = document.getElementById(
+    "map-recenter-btn",
+  ) as HTMLButtonElement;
+
+  let listing: any = null;
+  let currentUser: any = null;
+  let hostProfileLoaded = false;
+  let hostProfileLoadPromise: Promise<void> | null = null;
+  let pricePerHour = 0;
+  let map: any = null;
+  let listingLng = 174.7762;
+  let listingLat = -41.2865;
+
+  // Dates initialization
+  const toDateValue = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayValue = toDateValue(today);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  bookingDateInput.min = todayValue;
+  bookingDateInput.value = toDateValue(tomorrow);
+  let visibleCalendarMonth = new Date(
+    tomorrow.getFullYear(),
+    tomorrow.getMonth(),
+    1,
+  );
+
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+  });
+
+  const escapeHtml = (value: string) =>
+    value.replace(
+      /[&<>"']/g,
+      (char) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[char] as string,
+    );
+
+  function formatReviewDate(value: any): string {
+    let date: Date | null = null;
+    if (value instanceof Timestamp) {
+      date = value.toDate();
+    } else if (value instanceof Date) {
+      date = value;
+    } else if (value && typeof value.toDate === "function") {
+      date = value.toDate();
+    } else if (typeof value === "string" || typeof value === "number") {
+      date = new Date(value);
+    }
+
+    if (!date || Number.isNaN(date.getTime())) return "";
+    return new Intl.DateTimeFormat("en-NZ", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(date);
+  }
+
+  function renderHostProfileAvatar(imageUrl: string, name: string) {
+    const initial = name.trim().charAt(0).toUpperCase() || "H";
+    hostProfileAvatar.innerHTML = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="" class="h-full w-full rounded-full object-cover" />`
+      : escapeHtml(initial);
+  }
+
+  function renderHostListings(listingDocs: any[]) {
+    const otherListings = listingDocs.filter((item) => item.id !== listing.id);
+    hostProfileListingCount.textContent = String(otherListings.length);
+    if (otherListings.length === 0) {
+      hostProfileListings.innerHTML = `
+        <p class="col-span-full rounded-xl border border-dashed border-line bg-[#f8f9fa] px-4 py-6 text-center text-sm text-muted">
+          This host has no other listings yet.
+        </p>`;
+      return;
+    }
+
+    hostProfileListings.innerHTML = otherListings
+      .map((item) => {
+        const data = item.data();
+        const title = String(data.title || "Untitled gear");
+        const image =
+          Array.isArray(data.imageUrls) && data.imageUrls.length > 0
+            ? String(data.imageUrls[0])
+            : "/kayaking.webp";
+        const category = String(data.category || "Equipment");
+        const location = String(data.location || "");
+        const price = Number(data.pricePerHour) || 0;
+        const available = data.isAvailable !== false;
+        return `
+          <a
+            href="/listing/${encodeURIComponent(item.id)}"
+            class="group overflow-hidden rounded-2xl border border-line bg-white text-left no-underline transition-all hover:-translate-y-0.5 hover:border-ocean-500 hover:shadow-[0_10px_24px_rgba(0,37,58,0.10)]"
+          >
+            <div class="relative aspect-[16/10] overflow-hidden bg-ocean-50">
+              <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+              <span class="absolute left-2.5 top-2.5 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-ocean-950 shadow-sm">${escapeHtml(category)}</span>
+            </div>
+            <div class="p-3.5">
+              <h4 class="truncate text-sm font-extrabold text-ocean-950">${escapeHtml(title)}</h4>
+              <p class="mt-1 truncate text-xs text-muted">${escapeHtml(location || "New Zealand")}</p>
+              <div class="mt-3 flex items-center justify-between gap-2">
+                <p class="text-sm font-extrabold text-ocean-950">NZ$${price.toFixed(0)}<span class="text-[11px] font-semibold text-muted"> / hr</span></p>
+                <span class="text-[10px] font-bold ${available ? "text-emerald-700" : "text-muted"}">${available ? "Available" : "Unavailable"}</span>
+              </div>
+            </div>
+          </a>`;
+      })
+      .join("");
+  }
+
+  function renderHostReviews(reviewDocs: any[], rating: number, reviewCount: number) {
+    hostProfileReviewCount.textContent = String(reviewCount);
+    hostProfileReviewSummary.textContent =
+      reviewCount > 0
+        ? `★ ${rating > 0 ? rating.toFixed(1) : "New"} · ${reviewCount} ${reviewCount === 1 ? "review" : "reviews"}`
+        : "No reviews yet";
+
+    if (reviewDocs.length === 0) {
+      hostProfileReviews.innerHTML = `
+        <p class="rounded-xl border border-dashed border-line bg-[#f8f9fa] px-4 py-6 text-center text-sm text-muted">
+          No reviews yet. Reviews from previous renters will appear here.
+        </p>`;
+      return;
+    }
+
+    hostProfileReviews.innerHTML = reviewDocs
+      .map((reviewDoc) => {
+        const review = reviewDoc.data();
+        const reviewerName = String(review.reviewerName || "Paddlme member");
+        const ratingValue = Math.min(
+          5,
+          Math.max(0, Number(review.rating) || 0),
+        );
+        const comment = String(review.comment || "").trim();
+        const date = formatReviewDate(review.createdAt);
+        const stars = Array.from({ length: 5 }, (_, index) =>
+          index < Math.floor(ratingValue) ? "★" : "☆",
+        ).join("");
+        const initial = reviewerName.trim().charAt(0).toUpperCase() || "P";
+
+        return `
+          <article class="rounded-2xl border border-line bg-white p-4 shadow-sm sm:p-5">
+            <div class="flex items-start gap-3">
+              <div class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ocean-50 text-sm font-extrabold text-ocean-700">${escapeHtml(initial)}</div>
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                  <h4 class="text-sm font-extrabold text-ocean-950">${escapeHtml(reviewerName)}</h4>
+                  ${date ? `<time class="text-xs font-medium text-muted">${escapeHtml(date)}</time>` : ""}
+                </div>
+                <div class="mt-1 flex items-center gap-2">
+                  <span class="tracking-[0.12em] text-accent" aria-label="${ratingValue} out of 5 stars">${stars}</span>
+                  <span class="text-xs font-bold text-ink">${ratingValue.toFixed(1)}</span>
+                </div>
+              </div>
+            </div>
+            ${comment ? `<p class="mt-3 whitespace-pre-line text-sm leading-6 text-ink">${escapeHtml(comment)}</p>` : ""}
+          </article>`;
+      })
+      .join("");
+  }
+
+  async function loadHostProfile() {
+    if (!listing?.ownerId || hostProfileLoaded) return;
+    if (hostProfileLoadPromise) return hostProfileLoadPromise;
+
+    hostProfileLoading.classList.remove("hidden");
+    hostProfileError.classList.add("hidden");
+    hostProfileLoadPromise = (async () => {
+      try {
+        const ownerId = String(listing.ownerId);
+        const [ownerSnapshot, ownerListingsSnapshot, reviewsSnapshot] =
+          await Promise.all([
+            getDoc(doc(db, "users", ownerId)),
+            getDocs(
+              query(
+                collection(db, "equipment"),
+                where("ownerId", "==", ownerId),
+                orderBy("createdAt", "desc"),
+              ),
+            ),
+            getDocs(
+              query(
+                collection(db, "reviews"),
+                where("reviewedId", "==", ownerId),
+                orderBy("createdAt", "desc"),
+              ),
+            ),
+          ]);
+
+        const owner = ownerSnapshot.data() || {};
+        const ownerName = String(owner.name || listing.ownerName || "Host");
+        const ownerImage = String(
+          owner.profileImageUrl || listing.ownerImageUrl || "",
+        );
+        const location = String(owner.location || listing.location || "New Zealand");
+        const bio = String(owner.bio || listing.ownerBio || "").trim();
+        const rating = Math.max(0, Number(owner.rating) || 0);
+        const reviews = reviewsSnapshot.docs;
+        const reviewCount = Math.max(
+          0,
+          Number(owner.reviewCount ?? reviews.length) || 0,
+        );
+
+        hostProfileName.textContent = ownerName;
+        hostProfileLocation.querySelector("span")!.textContent = location;
+        hostProfileBio.textContent = bio;
+        hostProfileBio.classList.toggle("hidden", !bio);
+        renderHostProfileAvatar(ownerImage, ownerName);
+        hostProfileRating.textContent = rating > 0 ? rating.toFixed(1) : "New";
+        renderHostListings(ownerListingsSnapshot.docs);
+        renderHostReviews(reviews, rating, reviewCount);
+        hostProfileLoaded = true;
+      } catch (error) {
+        console.error("Failed to load host profile:", error);
+        hostProfileError.textContent =
+          "We couldn't load this host's profile. Close this window and try again.";
+        hostProfileError.classList.remove("hidden");
+      } finally {
+        hostProfileLoading.classList.add("hidden");
+        hostProfileLoadPromise = null;
+      }
+    })();
+
+    return hostProfileLoadPromise;
+  }
+
+  function openHostProfile() {
+    if (!listing) return;
+    const name = String(listing.ownerName || "Host");
+    hostProfileName.textContent = name;
+    hostProfileLocation.querySelector("span")!.textContent = String(
+      listing.location || "New Zealand",
+    );
+    renderHostProfileAvatar(String(listing.ownerImageUrl || ""), name);
+    hostProfileBio.textContent = String(listing.ownerBio || "");
+    hostProfileBio.classList.toggle("hidden", !listing.ownerBio);
+    hostProfileModal.classList.remove("hidden");
+    void hostProfileModal.offsetWidth;
+    hostProfileModal.classList.add("is-open");
+    hostProfileClose.focus();
+    void loadHostProfile();
+  }
+
+  function closeHostProfile() {
+    hostProfileModal.classList.remove("is-open");
+    setTimeout(() => hostProfileModal.classList.add("hidden"), 200);
+    viewHostProfileBtn.focus();
+  }
+
+  viewHostProfileBtn.addEventListener("click", openHostProfile);
+  hostProfileClose.addEventListener("click", closeHostProfile);
+  hostProfileModal.addEventListener("click", (event) => {
+    if (event.target === hostProfileModal) closeHostProfile();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !hostProfileModal.classList.contains("hidden")) {
+      closeHostProfile();
+    }
+  });
+
+  const formatDateLabel = (value: string) =>
+    new Intl.DateTimeFormat("en-NZ", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(`${value}T00:00:00`));
+
+  const formatTimeLabel = (value: string) => {
+    const [hour, minute] = value.split(":").map(Number);
+    const period = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${String(minute).padStart(2, "0")} ${period}`;
+  };
+
+  function toggleDateMenu(show?: boolean) {
+    const shouldOpen =
+      show ?? bookingDateMenu.classList.contains("hidden");
+    bookingDateMenu.classList.toggle("hidden", !shouldOpen);
+    bookingDatePickerChevron.classList.toggle("rotate-180", shouldOpen);
+    bookingDatePickerBtn.setAttribute("aria-expanded", String(shouldOpen));
+    if (shouldOpen) renderCalendar();
+  }
+
+  function renderCalendar() {
+    const year = visibleCalendarMonth.getFullYear();
+    const month = visibleCalendarMonth.getMonth();
+    bookingCalendarMonth.textContent = new Intl.DateTimeFormat("en-NZ", {
+      month: "long",
+      year: "numeric",
+    }).format(visibleCalendarMonth);
+
+    const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthStart = new Date(year, month, 1);
+    const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    bookingCalendarPrev.disabled = monthStart <= currentMonthStart;
+    bookingCalendarPrev.classList.toggle("opacity-40", bookingCalendarPrev.disabled);
+
+    let daysMarkup = "";
+    for (let blank = 0; blank < firstWeekday; blank += 1) {
+      daysMarkup += '<span aria-hidden="true"></span>';
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const date = new Date(year, month, day);
+      const value = toDateValue(date);
+      const disabled = value < todayValue;
+      const selected = value === bookingDateInput.value;
+      daysMarkup += `
+        <button
+          type="button"
+          class="mx-auto grid h-9 w-9 place-items-center rounded-full text-sm font-semibold transition-colors ${
+            selected
+              ? "bg-ocean-950 text-white"
+              : disabled
+                ? "cursor-not-allowed text-muted/40"
+                : "text-ink hover:bg-ocean-50 hover:text-ocean-950"
+          }"
+          data-booking-date="${value}"
+          aria-label="${formatDateLabel(value)}"
+          ${disabled ? "disabled" : ""}
+          ${selected ? 'aria-pressed="true"' : 'aria-pressed="false"'}
+        >${day}</button>`;
+    }
+    bookingCalendarDays.innerHTML = daysMarkup;
+    bookingCalendarDays
+      .querySelectorAll<HTMLButtonElement>("[data-booking-date]")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          bookingDateInput.value = button.dataset.bookingDate || "";
+          bookingDatePickerLabel.textContent = formatDateLabel(
+            bookingDateInput.value,
+          );
+          toggleDateMenu(false);
+          updatePrice();
+        });
+      });
+  }
+
+  bookingDatePickerLabel.textContent = formatDateLabel(bookingDateInput.value);
+  bookingDatePickerBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleDateMenu();
+    closeTimeMenus();
+  });
+  bookingCalendarPrev.addEventListener("click", (event) => {
+    event.stopPropagation();
+    visibleCalendarMonth = new Date(
+      visibleCalendarMonth.getFullYear(),
+      visibleCalendarMonth.getMonth() - 1,
+      1,
+    );
+    renderCalendar();
+  });
+  bookingCalendarNext.addEventListener("click", (event) => {
+    event.stopPropagation();
+    visibleCalendarMonth = new Date(
+      visibleCalendarMonth.getFullYear(),
+      visibleCalendarMonth.getMonth() + 1,
+      1,
+    );
+    renderCalendar();
+  });
+
+  const startTimes = Array.from({ length: 10 }, (_, index) =>
+    `${String(index + 7).padStart(2, "0")}:00`,
+  );
+  const endTimes = Array.from({ length: 9 }, (_, index) =>
+    `${String(index + 10).padStart(2, "0")}:00`,
+  );
+
+  function closeTimeMenus() {
+    startTimeMenu.classList.add("hidden");
+    endTimeMenu.classList.add("hidden");
+    startTimeChevron.classList.remove("rotate-180");
+    endTimeChevron.classList.remove("rotate-180");
+    startTimeBtn.setAttribute("aria-expanded", "false");
+    endTimeBtn.setAttribute("aria-expanded", "false");
+  }
+
+  function renderTimeOptions() {
+    const endMinutes = Number(endTimeSelect.value.slice(0, 2)) * 60;
+    const startMinutes = Number(startTimeSelect.value.slice(0, 2)) * 60;
+    startTimeOptions.innerHTML = startTimes
+      .map((time) => {
+        const selected = time === startTimeSelect.value;
+        const disabled = Number(time.slice(0, 2)) * 60 >= endMinutes;
+        return `<button type="button" role="option" aria-selected="${selected}" class="time-option flex w-full items-center rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition-colors ${
+          selected
+            ? "bg-ocean-50/70 font-bold text-ocean-950"
+            : "text-ink hover:bg-[#f6f8f9]"
+        } ${disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"}" data-time="${time}" ${
+          disabled ? "disabled" : ""
+        }>${formatTimeLabel(time)}</button>`;
+      })
+      .join("");
+    endTimeOptions.innerHTML = endTimes
+      .map((time) => {
+        const selected = time === endTimeSelect.value;
+        const disabled = Number(time.slice(0, 2)) * 60 <= startMinutes;
+        return `<button type="button" role="option" aria-selected="${selected}" class="time-option flex w-full items-center rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition-colors ${
+          selected
+            ? "bg-ocean-50/70 font-bold text-ocean-950"
+            : "text-ink hover:bg-[#f6f8f9]"
+        } ${disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"}" data-time="${time}" ${
+          disabled ? "disabled" : ""
+        }>${formatTimeLabel(time)}</button>`;
+      })
+      .join("");
+
+    startTimeOptions
+      .querySelectorAll<HTMLButtonElement>("[data-time]:not(:disabled)")
+      .forEach((button) =>
+        button.addEventListener("click", () => selectTime("start", button.dataset.time || "")),
+      );
+    endTimeOptions
+      .querySelectorAll<HTMLButtonElement>("[data-time]:not(:disabled)")
+      .forEach((button) =>
+        button.addEventListener("click", () => selectTime("end", button.dataset.time || "")),
+      );
+  }
+
+  function selectTime(which: "start" | "end", value: string) {
+    if (which === "start") {
+      startTimeSelect.value = value;
+      startTimeLabel.textContent = formatTimeLabel(value);
+    } else {
+      endTimeSelect.value = value;
+      endTimeLabel.textContent = formatTimeLabel(value);
+    }
+    closeTimeMenus();
+    renderTimeOptions();
+    updatePrice();
+  }
+
+  function toggleTimeMenu(which: "start" | "end") {
+    const menu = which === "start" ? startTimeMenu : endTimeMenu;
+    const button = which === "start" ? startTimeBtn : endTimeBtn;
+    const chevron = which === "start" ? startTimeChevron : endTimeChevron;
+    const shouldOpen = menu.classList.contains("hidden");
+    closeTimeMenus();
+    toggleDateMenu(false);
+    if (shouldOpen) {
+      renderTimeOptions();
+      menu.classList.remove("hidden");
+      chevron.classList.add("rotate-180");
+      button.setAttribute("aria-expanded", "true");
+    }
+  }
+
+  startTimeBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleTimeMenu("start");
+  });
+  endTimeBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleTimeMenu("end");
+  });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as Node;
+    if (!bookingDateWrapper.contains(target)) toggleDateMenu(false);
+    if (!startTimeWrapper.contains(target) && !endTimeWrapper.contains(target)) {
+      closeTimeMenus();
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      toggleDateMenu(false);
+      closeTimeMenus();
+    }
+  });
+
+  // Time & Price Calculation
+  function calculateDurationHours(): number {
+    if (!bookingDateInput.value) return 0;
+    const startMinutes =
+      Number(startTimeSelect.value.slice(0, 2)) * 60 +
+      Number(startTimeSelect.value.slice(3, 5));
+    const endMinutes =
+      Number(endTimeSelect.value.slice(0, 2)) * 60 +
+      Number(endTimeSelect.value.slice(3, 5));
+    const durationHours = (endMinutes - startMinutes) / 60;
+    return durationHours > 0 ? durationHours : 0;
+  }
+
+  function updatePrice() {
+    const hours = calculateDurationHours();
+    if (hours <= 0) {
+      calcHeadline.textContent = "Invalid duration";
+      calcSubtext.textContent = "End time must be after start time.";
+      bookBtn.disabled = true;
+      bookBtn.classList.add("opacity-50", "cursor-not-allowed");
+      return;
+    }
+
+    bookBtn.disabled = false;
+    bookBtn.classList.remove("opacity-50", "cursor-not-allowed");
+
+    const total = hours * pricePerHour;
+    calcHeadline.textContent = `NZ$${total.toFixed(0)} (${hours.toFixed(1)} hours)`;
+    calcSubtext.textContent = `NZ$${pricePerHour.toFixed(0)}/hr × ${hours.toFixed(1)} hrs. Security deposit held on card, released on return.`;
+  }
+
+  renderTimeOptions();
+
+  // Mapbox Initialization for Location Area View
+  function initLocationMap(lat: number, lng: number) {
+    if (map || typeof mapboxgl === "undefined") return;
+
+    listingLat = lat;
+    listingLng = lng;
+
+    if (mapboxToken) {
+      mapboxgl.accessToken = mapboxToken;
+    }
+
+    map = new mapboxgl.Map({
+      container: "listing-map",
+      style: "mapbox://styles/mapbox/streets-v12",
+      center: [lng, lat],
+      zoom: 12.5,
+      attributionControl: false,
+    });
+
+    map.addControl(
+      new mapboxgl.AttributionControl({ compact: true }),
+      "bottom-right",
+    );
+
+    // Create privacy area circle marker (matching reference)
+    const el = document.createElement("div");
+    el.className = "privacy-circle";
+    el.style.width = "70px";
+    el.style.height = "70px";
+
+    new mapboxgl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map);
+
+    recenterBtn.addEventListener("click", () => {
+      if (map) {
+        map.flyTo({
+          center: [listingLng, listingLat],
+          zoom: 12.5,
+          essential: true,
+        });
+      }
+    });
+  }
+
+  async function resolveCoordinatesAndInitMap(
+    locationStr: string,
+    lat?: number | null,
+    lng?: number | null,
+  ) {
+    if (
+      typeof lat === "number" &&
+      typeof lng === "number" &&
+      !isNaN(lat) &&
+      !isNaN(lng)
+    ) {
+      initLocationMap(lat, lng);
+      return;
+    }
+
+    // Geocode via Mapbox Places API
+    try {
+      if (mapboxToken && locationStr) {
+        const res = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(locationStr)}.json?access_token=${mapboxToken}&country=nz&limit=1`,
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data.features?.length > 0) {
+            const [gLng, gLat] = data.features[0].center;
+            initLocationMap(gLat, gLng);
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Map geocoding fallback:", e);
+    }
+
+    // Default: Wellington
+    initLocationMap(-41.2865, 174.7762);
+  }
+
+  // Render Listing
+  function renderListing(data: any) {
+    listing = data;
+    pricePerHour = Number(data.pricePerHour || 0);
+
+    titleEl.textContent = data.title || "Untitled gear";
+    breadcrumbTitle.textContent = data.title || "Listing";
+    locationBadge.textContent = data.location || "New Zealand";
+
+    const cat = data.category
+      ? String(data.category).toUpperCase()
+      : "WATER SPORTS";
+    categoryText.textContent = `${cat} · ${data.location || "New Zealand"}`;
+    priceRowText.textContent = `NZ$${pricePerHour.toFixed(0)} / hour`;
+
+    // Photos
+    const images =
+      Array.isArray(data.imageUrls) && data.imageUrls.length > 0
+        ? data.imageUrls
+        : ["/kayaking.webp"];
+    mainImage.src = images[0];
+    galleryCount.textContent = `Photo 1 of ${images.length}`;
+
+    if (images.length > 1) {
+      thumbnailsContainer.innerHTML = images
+        .map(
+          (img: string, idx: number) => `
+          <button
+            type="button"
+            class="thumb-btn h-16 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer ${
+              idx === 0
+                ? "border-accent"
+                : "border-line opacity-70 hover:opacity-100"
+            }"
+            data-index="${idx}"
+            data-src="${escapeHtml(img)}"
+          >
+            <img src="${escapeHtml(img)}" alt="" class="h-full w-full object-cover" />
+          </button>`,
+        )
+        .join("");
+
+      thumbnailsContainer
+        .querySelectorAll<HTMLButtonElement>(".thumb-btn")
+        .forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const src = btn.getAttribute("data-src")!;
+            const idx = Number(btn.getAttribute("data-index")!);
+            mainImage.src = src;
+            galleryCount.textContent = `Photo ${idx + 1} of ${images.length}`;
+
+            thumbnailsContainer.querySelectorAll(".thumb-btn").forEach((b) => {
+              b.classList.remove("border-accent");
+              b.classList.add("border-line", "opacity-70");
+            });
+            btn.classList.add("border-accent");
+            btn.classList.remove("border-line", "opacity-70");
+          });
+        });
+    }
+
+    // Host
+    const oName = data.ownerName || "Host";
+    hostName.textContent = oName;
+    if (data.ownerImageUrl) {
+      hostAvatar.innerHTML = `<img src="${escapeHtml(data.ownerImageUrl)}" alt="" class="h-full w-full object-cover rounded-full" />`;
+    } else {
+      hostAvatar.innerHTML = `<span>${escapeHtml(oName.charAt(0).toUpperCase())}</span>`;
+    }
+
+    // Description
+    descEl.textContent =
+      data.description || "No detailed description available.";
+
+    // Features
+    const feats = Array.isArray(data.features) ? data.features : [];
+    if (feats.length > 0) {
+      featuresContainer.classList.remove("hidden");
+      featuresGrid.innerHTML = feats
+        .map(
+          (f: string) => `
+          <span class="inline-flex items-center gap-1.5 rounded-lg border border-line bg-[#f8f9fa] px-3 py-1.5 text-xs font-semibold text-ink">
+            <svg class="h-3.5 w-3.5 text-emerald-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+            ${escapeHtml(f)}
+          </span>`,
+        )
+        .join("");
+    }
+
+    updatePrice();
+
+    // Show content
+    skeleton.classList.add("hidden");
+    content.classList.remove("hidden");
+
+    // Initialize map
+    resolveCoordinatesAndInitMap(data.location, data.latitude, data.longitude);
+  }
+
+  async function loadListing() {
+    if (!listingId || listingId === "preview") {
+      skeleton.classList.add("hidden");
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    try {
+      const snap = await getDoc(doc(db, "equipment", listingId));
+      if (!snap.exists()) {
+        skeleton.classList.add("hidden");
+        errorEl.classList.remove("hidden");
+        return;
+      }
+
+      renderListing({ id: snap.id, ...snap.data() });
+    } catch (err) {
+      console.error("Failed to load listing:", err);
+      skeleton.classList.add("hidden");
+      errorEl.classList.remove("hidden");
+    }
+  }
+
+  // Share Link
+  shareBtn.addEventListener("click", async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: listing?.title || "Paddlme Gear",
+          url: window.location.href,
+        });
+        return;
+      } catch {}
+    }
+    navigator.clipboard.writeText(window.location.href);
+    alert("Listing link copied to clipboard!");
+  });
+
+  // Booking Request
+  bookBtn.addEventListener("click", async () => {
+    if (!currentUser) {
+      const loginBtn = document.querySelector<HTMLButtonElement>(
+        '[data-auth="login"]',
+      );
+      if (loginBtn) loginBtn.click();
+      return;
+    }
+
+    if (currentUser.uid === listing.ownerId) {
+      alert("You cannot book your own equipment.");
+      return;
+    }
+
+    const hours = calculateDurationHours();
+    if (hours <= 0) {
+      alert("Please select a valid rental duration.");
+      return;
+    }
+
+    const totalPrice = hours * pricePerHour;
+    const refCode = "BK-" + Math.floor(100000 + Math.random() * 900000);
+
+    bookBtn.disabled = true;
+    bookBtn.textContent = "Submitting request…";
+
+    try {
+      const startDateTime = new Date(
+        `${bookingDateInput.value}T${startTimeSelect.value}:00`,
+      );
+      const endDateTime = new Date(
+        `${bookingDateInput.value}T${endTimeSelect.value}:00`,
+      );
+
+      await addDoc(collection(db, "bookings"), {
+        equipmentId: listing.id,
+        equipmentTitle: listing.title,
+        equipmentImageUrl: listing.imageUrls?.[0] || "",
+        ownerId: listing.ownerId,
+        ownerName: listing.ownerName,
+        renterId: currentUser.uid,
+        renterName:
+          currentUser.displayName ||
+          currentUser.email?.split("@")[0] ||
+          "Renter",
+        startDate: Timestamp.fromDate(startDateTime),
+        endDate: Timestamp.fromDate(endDateTime),
+        startTime: startTimeSelect.value,
+        endTime: endTimeSelect.value,
+        totalHours: hours,
+        totalPrice: totalPrice,
+        status: "pending",
+        deliveryOption: "pickup",
+        bookingReference: refCode,
+        bookingDate: serverTimestamp(),
+        renterReviewed: false,
+        ownerReviewed: false,
+      });
+
+      // Show success modal
+      successRef.textContent = refCode;
+      successPrice.textContent = `NZ$${totalPrice.toFixed(0)}`;
+      successDatetime.textContent = `${formatDateLabel(bookingDateInput.value)} · ${formatTimeLabel(startTimeSelect.value)} – ${formatTimeLabel(endTimeSelect.value)}`;
+
+      successModal.classList.remove("hidden");
+      void successModal.offsetWidth;
+      successModal.classList.add("is-open");
+
+      bookBtn.textContent = "Request Sent!";
+    } catch (err) {
+      console.error("Failed to create booking:", err);
+      alert("Could not submit booking request. Please try again.");
+      bookBtn.disabled = false;
+      bookBtn.textContent = "Request to book";
+    }
+  });
+
+  successClose.addEventListener("click", () => {
+    successModal.classList.remove("is-open");
+    setTimeout(() => {
+      successModal.classList.add("hidden");
+    }, 200);
+  });
+
+  // Contact Host
+  contactBtn.addEventListener("click", () => {
+    if (!currentUser) {
+      const loginBtn = document.querySelector<HTMLButtonElement>(
+        '[data-auth="login"]',
+      );
+      if (loginBtn) loginBtn.click();
+      return;
+    }
+
+    if (currentUser.uid === listing.ownerId) {
+      alert("You cannot message yourself.");
+      return;
+    }
+
+    contactHostName.textContent = listing.ownerName || "Host";
+    contactItemName.textContent = listing.title || "Gear";
+    if (listing.ownerImageUrl) {
+      contactAvatar.innerHTML = `<img src="${escapeHtml(listing.ownerImageUrl)}" alt="" class="h-full w-full object-cover rounded-full" />`;
+    } else {
+      contactAvatar.textContent = (listing.ownerName || "H")
+        .charAt(0)
+        .toUpperCase();
+    }
+
+    contactInput.value = `Hi ${listing.ownerName || "there"}, is your ${listing.title} available on ${formatDateLabel(bookingDateInput.value)}?`;
+
+    contactModal.classList.remove("hidden");
+    void contactModal.offsetWidth;
+    contactModal.classList.add("is-open");
+  });
+
+  contactClose.addEventListener("click", () => {
+    contactModal.classList.remove("is-open");
+    setTimeout(() => {
+      contactModal.classList.add("hidden");
+    }, 200);
+  });
+
+  contactSend.addEventListener("click", async () => {
+    const text = contactInput.value.trim();
+    if (!text) return;
+
+    contactSend.disabled = true;
+    contactSend.textContent = "Sending…";
+
+    try {
+      const participantIds = [currentUser.uid, listing.ownerId].sort();
+      const conversationId = participantIds.join("_");
+      const conversationRef = doc(db, "conversations", conversationId);
+      const conversationSnapshot = await getDoc(conversationRef);
+
+      if (!conversationSnapshot.exists()) {
+        const senderName =
+          currentUser.displayName ||
+          currentUser.email?.split("@")[0] ||
+          "Paddlme member";
+        await setDoc(conversationRef, {
+          participantIds,
+          participantNames: {
+            [currentUser.uid]: senderName,
+            [listing.ownerId]: listing.ownerName || "Host",
+          },
+          participantAvatars: {
+            [currentUser.uid]: currentUser.photoURL || null,
+            [listing.ownerId]: listing.ownerImageUrl || null,
+          },
+          equipmentId: listing.id,
+          equipmentTitle: listing.title || "Gear",
+          equipmentImageUrl: listing.imageUrls?.[0] || null,
+          unreadCounts: {
+            [currentUser.uid]: 0,
+            [listing.ownerId]: 0,
+          },
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+      }
+
+      await addDoc(
+        collection(db, "conversations", conversationId, "messages"),
+        {
+          conversationId: conversationId,
+          senderId: currentUser.uid,
+          senderName:
+            currentUser.displayName ||
+            currentUser.email?.split("@")[0] ||
+            "Paddlme member",
+          senderAvatarUrl: currentUser.photoURL || null,
+          receiverId: listing.ownerId,
+          message: text,
+          equipmentId: listing.id,
+          timestamp: serverTimestamp(),
+          isRead: false,
+          type: "text",
+          participantIds,
+        },
+      );
+
+      contactModal.classList.remove("is-open");
+      setTimeout(() => {
+        contactModal.classList.add("hidden");
+      }, 200);
+
+      window.location.assign(
+        `/messages?conversation=${encodeURIComponent(conversationId)}`,
+      );
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      alert("Could not send message. Please try again.");
+    } finally {
+      contactSend.disabled = false;
+      contactSend.textContent = "Send message";
+    }
+  });
+
+  loadListing();
+</script>

@@ -1,0 +1,185 @@
+---
+// Location selection modal featuring an interactive Mapbox map with search input,
+// location suggestions, draggable/clickable pin, and location selection card.
+interface Props {
+  mapboxToken?: string;
+}
+const { mapboxToken = '' } = Astro.props;
+---
+
+<div
+  id="location-modal-overlay"
+  class="auth-overlay fixed inset-0 z-50 hidden overflow-y-auto bg-ocean-950/60 backdrop-blur-[2px]"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="location-modal-title"
+  data-mapbox-token={mapboxToken}
+>
+  <div class="flex min-h-full items-center justify-center p-3 sm:p-5">
+    <div
+      class="auth-card relative w-full max-w-[560px] overflow-hidden rounded-2xl bg-white shadow-[0_24px_64px_rgba(0,37,58,0.35)]"
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-line/80 px-6 py-4">
+        <h2
+          id="location-modal-title"
+          class="text-[19px] font-extrabold tracking-[-0.01em] text-ocean-950"
+        >
+          Where do you want to rent?
+        </h2>
+        <button
+          type="button"
+          id="location-modal-close"
+          aria-label="Close"
+          class="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-[#f6f8f9] hover:text-ink cursor-pointer"
+        >
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Search Input Container -->
+      <div class="relative px-6 pt-4 pb-3">
+        <div class="relative">
+          <svg
+            class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.5-3.5"></path>
+          </svg>
+          <input
+            id="location-modal-search"
+            type="text"
+            placeholder="Type an address or region"
+            autocomplete="off"
+            class="h-11 w-full rounded-xl border border-line bg-white pl-10 pr-9 text-[14px] text-ink outline-none transition-colors placeholder:text-muted/60 focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500"
+          />
+          <button
+            id="location-search-clear"
+            type="button"
+            class="absolute right-3 top-1/2 hidden -translate-y-1/2 text-muted hover:text-ink cursor-pointer"
+            aria-label="Clear search"
+          >
+            <svg
+              class="h-3.5 w-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            >
+              <path d="M18 6L6 18M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Autocomplete Suggestions Dropdown -->
+        <div
+          id="location-suggestions"
+          class="absolute left-6 right-6 top-[calc(100%-4px)] z-30 hidden max-h-56 overflow-y-auto rounded-xl border border-line bg-white py-1 shadow-[0_12px_28px_rgba(0,37,58,0.16)]"
+        ></div>
+      </div>
+
+      <!-- Map Area with Floating Card -->
+      <div class="relative px-6 pb-6">
+        <div
+          class="relative h-[360px] w-full overflow-hidden rounded-2xl border border-line bg-[#f0f3f5]"
+        >
+          <!-- Map Container -->
+          <div id="location-map" class="h-full w-full"></div>
+
+          <!-- Recenter Button -->
+          <button
+            type="button"
+            id="location-recenter-btn"
+            title="Recenter map"
+            class="absolute right-3 top-3 z-[10] grid h-8 w-8 place-items-center rounded-lg border border-line/60 bg-white shadow-sm transition-colors hover:bg-[#f6f8f9] cursor-pointer"
+          >
+            <svg
+              class="h-4 w-4 text-ink"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path>
+            </svg>
+          </button>
+
+          <!-- Floating Selected Location Card -->
+          <div
+            id="location-card"
+            class="absolute bottom-3 left-3 right-3 z-[10] rounded-xl border border-line/60 bg-white/95 p-3.5 shadow-[0_8px_20px_rgba(0,37,58,0.12)] backdrop-blur-sm transition-all"
+          >
+            <div class="flex items-start gap-2.5">
+              <svg
+                class="mt-0.5 h-4 w-4 shrink-0 text-muted"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"></path>
+                <circle cx="12" cy="10" r="2.5"></circle>
+              </svg>
+              <div class="min-w-0 flex-1">
+                <p
+                  id="location-selected-address"
+                  class="truncate text-[13px] font-semibold text-ink"
+                >
+                  Wellington Central, Wellington
+                </p>
+                <p id="location-selected-sub" class="text-[11px] text-muted">
+                  New Zealand
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              id="location-confirm-btn"
+              class="mt-3 flex w-full items-center justify-center rounded-xl bg-[#3f6d38] py-2.5 text-[14px] font-bold text-white shadow-sm transition-[filter,transform] hover:brightness-105 active:scale-[0.99] cursor-pointer"
+            >
+              Select this location
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  /* Ensure Mapbox GL styles fit cleanly inside rounded container */
+  .mapboxgl-canvas {
+    outline: none;
+  }
+  .mapboxgl-ctrl-bottom-left,
+  .mapboxgl-ctrl-bottom-right {
+    z-index: 5;
+    margin-bottom: 74px; /* keep above our floating card */
+  }
+  .mapboxgl-ctrl-attrib {
+    font-size: 10px !important;
+  }
+</style>
